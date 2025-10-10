@@ -1,5 +1,3 @@
-import React from "react";
-
 const plansData = [
   {
     name: "Starter",
@@ -60,11 +58,13 @@ export default function Plans({ onNavigate }) {
             <div
               key={i}
               className={`relative p-8 rounded-xl border-2 ${
-                plan.popular ? "border-blue-600 scale-105" : "border-gray-200"
-              } transition`}
+                plan.popular
+                  ? "border-blue-600 scale-105 shadow-lg"
+                  : "border-gray-200 hover:shadow-md"
+              } transition-transform duration-200`}
             >
               {plan.popular && (
-                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 text-xs font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-full">
+                <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 text-xs font-semibold text-white bg-gradient-to-r from-blue-600 to-blue-700 rounded-full shadow-md tracking-wide">
                   Mais Popular
                 </div>
               )}
@@ -100,7 +100,7 @@ export default function Plans({ onNavigate }) {
                   plan.popular
                     ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white"
                     : "bg-gray-100 text-gray-800"
-                } w-full py-3 rounded-lg font-semibold hover:scale-105 transition`}
+                } w-full py-3 rounded-lg font-semibold hover:scale-105 transition-transform duration-200`}
               >
                 Começar Agora
               </button>

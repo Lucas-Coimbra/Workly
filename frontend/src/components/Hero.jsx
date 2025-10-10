@@ -1,12 +1,9 @@
-import React from "react";
-
 export default function Hero({ onNavigate }) {
   return (
-    <section className="bg-gradient-to-br from-blue-50 to-blue-100 py-32">
+    <section className="bg-gradient-to-br from-[#E0F2FE] to-[#BFDBFE] py-32">
       <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
-        {/* Texto */}
         <div className="md:w-1/2">
-          <h1 className="text-5xl font-extrabold text-gray-900 mb-6 leading-tight">
+          <h1 className="text-[3.5rem] md:text-5xl font-extrabold text-gray-900 mb-6 leading-[1.1]">
             O futuro do trabalho <br />
             <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-700">
               flexível está aqui
@@ -19,13 +16,13 @@ export default function Hero({ onNavigate }) {
           <div className="flex gap-4 mb-4">
             <button
               onClick={() => onNavigate("register")}
-              className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg shadow hover:scale-105 transition"
+              className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg shadow-md hover:scale-105 transition-transform duration-200"
             >
               Começar Gratuitamente
             </button>
             <button
               onClick={() => onNavigate("login")}
-              className="px-8 py-4 bg-white border border-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-50 transition"
+              className="px-8 py-4 bg-white border border-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
             >
               Fazer Login
             </button>
@@ -35,9 +32,8 @@ export default function Hero({ onNavigate }) {
           </p>
         </div>
 
-        {/* Mockup visual */}
         <div className="md:w-1/2 flex justify-center">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6">
+          <div className="bg-white rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.08)] max-w-md w-full p-6">
             <div className="flex gap-2 mb-4">
               <span className="w-3 h-3 bg-red-500 rounded-full"></span>
               <span className="w-3 h-3 bg-yellow-500 rounded-full"></span>
@@ -45,7 +41,7 @@ export default function Hero({ onNavigate }) {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                <div className="w-12 h-12 bg-blue-100 flex items-center justify-center rounded-full text-2xl">
+                <div className="w-12 h-12 bg-blue-100 flex items-center justify-center rounded-full text-[1.5rem]">
                   📊
                 </div>
                 <div>
@@ -54,7 +50,7 @@ export default function Hero({ onNavigate }) {
                 </div>
               </div>
               <div className="flex items-center gap-2 p-3 bg-gray-50 rounded-lg">
-                <div className="w-12 h-12 bg-green-100 flex items-center justify-center rounded-full text-2xl">
+                <div className="w-12 h-12 bg-green-100 flex items-center justify-center rounded-full text-[1.5rem]">
                   💰
                 </div>
                 <div>

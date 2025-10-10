@@ -1,5 +1,3 @@
-import React from "react";
-
 const featuresData = [
   {
     icon: "📅",
@@ -56,7 +54,7 @@ export default function Features() {
           {featuresData.map((feature, i) => (
             <div
               key={i}
-              className="p-6 border border-gray-200 rounded-xl hover:shadow-lg transition"
+              className="p-6 border border-gray-200 rounded-xl hover:shadow-[0_20px_60px_rgba(0,0,0,0.15)] transition-shadow duration-300"
             >
               <div className="text-5xl mb-4">{feature.icon}</div>
               <h3 className="font-semibold text-xl mb-2">{feature.title}</h3>

@@ -1,8 +1,6 @@
-import React from "react";
-
 export default function CTA({ onNavigate }) {
   return (
-    <section className="bg-gradient-to-r from-blue-600 to-blue-700 py-24 text-center text-white">
+    <section className="py-24 text-center text-white bg-[linear-gradient(135deg,#2563eb_0%,#1d4ed8_100%)]">
       <div className="max-w-3xl mx-auto px-6">
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
           Pronto para transformar seu coworking?
