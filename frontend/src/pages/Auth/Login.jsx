@@ -10,6 +10,22 @@ export default function Login({ onNavigate }) {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const handleRedirect = (role) => {
+    switch (role) {
+      case "member":
+        onNavigate("member-dashboard");
+        break;
+      case "admin":
+        onNavigate("admin-dashboard");
+        break;
+      case "support":
+        onNavigate("support-dashboard");
+        break;
+      default:
+        onNavigate("home");
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!captchaVerified) {
@@ -20,8 +36,7 @@ export default function Login({ onNavigate }) {
     setLoading(true);
     try {
       const userData = await login(email, password);
-      alert(`Login realizado como: ${userData.role}`);
-      onNavigate("/"); // futuramente, rota protegida
+      handleRedirect(userData.role);
     } catch (err) {
       alert(err.message);
     } finally {
@@ -35,8 +50,7 @@ export default function Login({ onNavigate }) {
     setLoading(true);
     try {
       const userData = await login(demoEmail, demoPassword);
-      alert(`Login realizado como: ${userData.role}`);
-      onNavigate("/");
+      handleRedirect(userData.role); // redireciona para o dashboard correto
     } catch (err) {
       alert(err.message);
     } finally {
@@ -143,7 +157,7 @@ export default function Login({ onNavigate }) {
             type="button"
             className="flex items-center gap-2 border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-50"
           >
-            {/* Google */}
+            {/* Google Icon */}
             <svg width="18" height="18" viewBox="0 0 24 24">
               <path
                 fill="#4285F4"
@@ -169,7 +183,7 @@ export default function Login({ onNavigate }) {
             type="button"
             className="flex items-center gap-2 border border-gray-300 rounded-lg px-4 py-2 hover:bg-gray-50"
           >
-            {/* Microsoft */}
+            {/* Microsoft Icon */}
             <svg width="18" height="18" viewBox="0 0 24 24">
               <path fill="#00A4EF" d="M0 0h11.377v11.372H0z" />
               <path fill="#FFB900" d="M12.623 0H24v11.372H12.623z" />

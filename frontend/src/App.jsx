@@ -1,10 +1,16 @@
 import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import { AuthProvider } from "./context/AuthProvider";
+import { useContext } from "react";
+import { AuthContext } from "./context/AuthContext";
 
 import Home from "./pages/Home";
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
+
+import MemberDashboard from "./pages/MemberDashboard";
+import AdminDashboard from "./pages/AdminDashboard";
+import SupportDashboard from "./pages/SupportDashboard";
 
 export default function App() {
   return (
@@ -18,6 +24,7 @@ export default function App() {
 
 function RoutesWrapper() {
   const navigate = useNavigate();
+  const { user, isAuthenticated, logout } = useContext(AuthContext);
 
   const handleNavigate = (page) => {
     switch (page) {
@@ -30,6 +37,15 @@ function RoutesWrapper() {
       case "forgot-password":
         navigate("/forgot-password");
         break;
+      case "member-dashboard":
+        navigate("/member-dashboard");
+        break;
+      case "admin-dashboard":
+        navigate("/admin-dashboard");
+        break;
+      case "support-dashboard":
+        navigate("/support-dashboard"); // ✅ nova rota
+        break;
       case "home":
       default:
         navigate("/");
@@ -37,10 +53,14 @@ function RoutesWrapper() {
     }
   };
 
+  const handleLogout = async () => {
+    await logout();
+    navigate("/login");
+  };
+
   return (
     <Routes>
       <Route path="/" element={<Home onNavigate={handleNavigate} />} />
-      <Route path="/login" element={<Login onNavigate={handleNavigate} />} />
       <Route
         path="/register"
         element={<Register onNavigate={handleNavigate} />}
@@ -48,6 +68,52 @@ function RoutesWrapper() {
       <Route
         path="/forgot-password"
         element={<ForgotPassword onNavigate={handleNavigate} />}
+      />
+      <Route path="/login" element={<Login onNavigate={handleNavigate} />} />
+
+      {/* Dashboard do membro */}
+      <Route
+        path="/member-dashboard"
+        element={
+          isAuthenticated && user?.role === "member" ? (
+            <MemberDashboard
+              onNavigate={handleNavigate}
+              onLogout={handleLogout}
+            />
+          ) : (
+            <Login onNavigate={handleNavigate} />
+          )
+        }
+      />
+
+      {/* Dashboard do admin */}
+      <Route
+        path="/admin-dashboard"
+        element={
+          isAuthenticated && user?.role === "admin" ? (
+            <AdminDashboard
+              onNavigate={handleNavigate}
+              onLogout={handleLogout}
+            />
+          ) : (
+            <Login onNavigate={handleNavigate} />
+          )
+        }
+      />
+
+      {/* ✅ Dashboard do suporte */}
+      <Route
+        path="/support-dashboard"
+        element={
+          isAuthenticated && user?.role === "support" ? (
+            <SupportDashboard
+              onNavigate={handleNavigate}
+              onLogout={handleLogout}
+            />
+          ) : (
+            <Login onNavigate={handleNavigate} />
+          )
+        }
       />
     </Routes>
   );
