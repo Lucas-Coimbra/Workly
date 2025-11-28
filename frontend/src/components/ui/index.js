@@ -55,3 +55,5 @@ export {
   DialogTitle,
   DialogTrigger,
 } from "./Dialog";
+
+export { Input } from "./Input";

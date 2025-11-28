@@ -11,6 +11,7 @@ import ForgotPassword from "./pages/Auth/ForgotPassword";
 import MemberDashboard from "./pages/MemberDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import SupportDashboard from "./pages/SupportDashboard";
+import Reservations from "./pages/Reservations";
 
 export default function App() {
   return (
@@ -40,11 +41,14 @@ function RoutesWrapper() {
       case "member-dashboard":
         navigate("/member-dashboard");
         break;
+      case "reservations": // ✅ rota de reservas
+        navigate("/reservations");
+        break;
       case "admin-dashboard":
         navigate("/admin-dashboard");
         break;
       case "support-dashboard":
-        navigate("/support-dashboard"); // ✅ nova rota
+        navigate("/support-dashboard");
         break;
       case "home":
       default:
@@ -86,6 +90,18 @@ function RoutesWrapper() {
         }
       />
 
+      {/* ✅ Página de Reservas (somente membro) */}
+      <Route
+        path="/reservations"
+        element={
+          isAuthenticated && user?.role === "member" ? (
+            <Reservations onNavigate={handleNavigate} onLogout={handleLogout} />
+          ) : (
+            <Login onNavigate={handleNavigate} />
+          )
+        }
+      />
+
       {/* Dashboard do admin */}
       <Route
         path="/admin-dashboard"
@@ -101,7 +117,7 @@ function RoutesWrapper() {
         }
       />
 
-      {/* ✅ Dashboard do suporte */}
+      {/* Dashboard do suporte */}
       <Route
         path="/support-dashboard"
         element={
