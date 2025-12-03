@@ -1,13 +1,13 @@
-import { Card } from "../ui/card";
-import { Label } from "../ui/label";
-import { Button } from "../ui/button";
+import { Card } from "../ui/Card";
+import { Label } from "../ui/Label";
+import { Button } from "../ui/Button";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "../ui/select";
+} from "../ui/Select";
 
 export default function Filters({
   spaceType,

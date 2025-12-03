@@ -12,6 +12,7 @@ import MemberDashboard from "./pages/MemberDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import SupportDashboard from "./pages/SupportDashboard";
 import Reservations from "./pages/Reservations";
+import Payment from "./pages/Payment";
 
 export default function App() {
   return (
@@ -41,8 +42,11 @@ function RoutesWrapper() {
       case "member-dashboard":
         navigate("/member-dashboard");
         break;
-      case "reservations": // ✅ rota de reservas
+      case "reservations":
         navigate("/reservations");
+        break;
+      case "payment":
+        navigate("/payment");
         break;
       case "admin-dashboard":
         navigate("/admin-dashboard");
@@ -62,6 +66,10 @@ function RoutesWrapper() {
     navigate("/login");
   };
 
+  const handleReserve = (reservationData) => {
+    navigate("/payment", { state: { reservationData } });
+  };
+
   return (
     <Routes>
       <Route path="/" element={<Home onNavigate={handleNavigate} />} />
@@ -75,7 +83,6 @@ function RoutesWrapper() {
       />
       <Route path="/login" element={<Login onNavigate={handleNavigate} />} />
 
-      {/* Dashboard do membro */}
       <Route
         path="/member-dashboard"
         element={
@@ -90,12 +97,26 @@ function RoutesWrapper() {
         }
       />
 
-      {/* ✅ Página de Reservas (somente membro) */}
       <Route
         path="/reservations"
         element={
           isAuthenticated && user?.role === "member" ? (
-            <Reservations onNavigate={handleNavigate} onLogout={handleLogout} />
+            <Reservations
+              onNavigate={handleNavigate}
+              onLogout={handleLogout}
+              onReserve={handleReserve}
+            />
+          ) : (
+            <Login onNavigate={handleNavigate} />
+          )
+        }
+      />
+
+      <Route
+        path="/payment"
+        element={
+          isAuthenticated && user?.role === "member" ? (
+            <Payment onNavigate={handleNavigate} onLogout={handleLogout} />
           ) : (
             <Login onNavigate={handleNavigate} />
           )

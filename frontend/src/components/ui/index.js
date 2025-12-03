@@ -57,3 +57,7 @@ export {
 } from "./Dialog";
 
 export { Input } from "./Input";
+
+export { RadioGroup, RadioGroupItem } from "./radio-group";
+
+export { Separator } from "./Separator";

@@ -71,6 +71,17 @@ export default function Reservations({ onNavigate, onLogout, onReserve }) {
     const space = modal.space;
     if (!space) return;
 
+    // --- Cálculo correto da duração ---
+    const [sh, sm] = reservationTime.start.split(":").map(Number);
+    const [eh, em] = reservationTime.end.split(":").map(Number);
+
+    const start = sh + sm / 60;
+    const end = eh + em / 60;
+
+    const duration = Math.max(0.5, end - start); // mínimo 0.5h
+    const total = duration * space.pricePerHour;
+
+    // --- Dados completos enviados para o pagamento ---
     const reservationData = {
       spaceName: space.name,
       spaceType: space.type,
@@ -79,15 +90,16 @@ export default function Reservations({ onNavigate, onLogout, onReserve }) {
       date: selectedDate.toLocaleDateString("pt-BR"),
       startTime: reservationTime.start,
       endTime: reservationTime.end,
+      duration,
+      total,
     };
 
     onReserve?.(reservationData);
     setModal({ type: null, space: null });
-    onNavigate?.("payment");
   };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex-col flex">
       <Header
         userType="member"
         onNavigate={onNavigate}
@@ -95,7 +107,7 @@ export default function Reservations({ onNavigate, onLogout, onReserve }) {
         currentPage="reservations"
       />
 
-      <main className="flex-1 bg-gray-50">
+      <main className="bg-gray-50 flex-1">
         <div className="max-w-7xl mx-auto px-6 py-8 space-y-6">
           <Card className="p-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg">
             <div className="flex items-center justify-between">

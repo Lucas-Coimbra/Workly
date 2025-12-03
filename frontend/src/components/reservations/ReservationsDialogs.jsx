@@ -4,16 +4,16 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "../ui/dialog";
-import { Label } from "../ui/label";
-import { Button } from "../ui/button";
+} from "../ui/Dialog";
+import { Label } from "../ui/Label";
+import { Button } from "../ui/Button";
 import {
   Users,
   DollarSign,
   Calendar as CalendarIcon,
   MapPin,
 } from "lucide-react";
-import { Input } from "../ui/input";
+import { Input } from "../ui/Input";
 import { calculateHours } from "../../../utils/reservationUtils";
 import { monthNames } from "../../mocks/reservations/calendarMock";
 
@@ -160,7 +160,18 @@ export function ReserveDialog({
           </div>
 
           <div className="flex gap-3">
-            <Button className="flex-1 bg-blue-600" onClick={onConfirm}>
+            <Button
+              className="flex-1 bg-blue-600"
+              onClick={() =>
+                onConfirm({
+                  space,
+                  selectedDate,
+                  reservationTime,
+                  totalHours,
+                  total,
+                })
+              }
+            >
               Confirmar Reserva
             </Button>
 
