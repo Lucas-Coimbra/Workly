@@ -13,6 +13,7 @@ import AdminDashboard from "./pages/AdminDashboard";
 import SupportDashboard from "./pages/SupportDashboard";
 import Reservations from "./pages/Reservations";
 import Payment from "./pages/Payment";
+import History from "./pages/History";
 
 export default function App() {
   return (
@@ -47,6 +48,9 @@ function RoutesWrapper() {
         break;
       case "payment":
         navigate("/payment");
+        break;
+      case "history":
+        navigate("/history");
         break;
       case "admin-dashboard":
         navigate("/admin-dashboard");
@@ -117,6 +121,17 @@ function RoutesWrapper() {
         element={
           isAuthenticated && user?.role === "member" ? (
             <Payment onNavigate={handleNavigate} onLogout={handleLogout} />
+          ) : (
+            <Login onNavigate={handleNavigate} />
+          )
+        }
+      />
+
+      <Route
+        path="/history"
+        element={
+          isAuthenticated && user?.role === "member" ? (
+            <History onNavigate={handleNavigate} onLogout={handleLogout} />
           ) : (
             <Login onNavigate={handleNavigate} />
           )
