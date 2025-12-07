@@ -1,0 +1,117 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(MEMBER)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  workspaces Workspace[]
+  tasks      Task[]
+  reservations Reservation[]
+}
+
+enum Role {
+  MEMBER
+  ADMIN
+  SUPPORT
+}
+
+model Workspace {
+  id        Int      @id @default(autoincrement())
+  name      String
+  ownerId   Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  owner User @relation(fields: [ownerId], references: [id])
+  rooms Room[]
+  tasks Task[]
+}
+
+model Room {
+  id         Int      @id @default(autoincrement())
+  name       String
+  type       RoomType
+  capacity   Int
+  workspaceId Int
+  workspace  Workspace @relation(fields: [workspaceId], references: [id])
+  reservations Reservation[]
+}
+
+enum RoomType {
+  SMALL
+  MEDIUM
+  LARGE
+}
+
+model Reservation {
+  id        Int      @id @default(autoincrement())
+  date      DateTime
+  startTime DateTime
+  endTime   DateTime
+  userId    Int
+  roomId    Int
+  paid      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user User @relation(fields:[userId], references:[id])
+  room Room @relation(fields:[roomId], references:[id])
+}
+
+model Task {
+  id          Int        @id @default(autoincrement())
+  title       String
+  description String?
+  status      TaskStatus @default(TODO)
+  priority    Priority   @default(MEDIUM)
+  deadline    DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  workspaceId Int
+  workspace   Workspace @relation(fields: [workspaceId], references: [id])
+
+  authorId Int
+  author   User @relation(fields: [authorId], references: [id])
+
+  tags TaskTag[]
+}
+
+model Tag {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  createdAt DateTime @default(now())
+  tasks TaskTag[]
+}
+
+model TaskTag {
+  id Int @id @default(autoincrement())
+  taskId Int
+  tagId Int
+  task Task @relation(fields:[taskId], references:[id])
+  tag Tag @relation(fields:[tagId], references:[id])
+  @@unique([taskId, tagId])
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  DONE
+}
+
+enum Priority {
+  LOW
+  MEDIUM
+  HIGH
+}

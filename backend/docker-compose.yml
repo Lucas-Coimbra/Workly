@@ -1,0 +1,27 @@
+version: "3.8"
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: workly
+    ports:
+      - "5432:5432"
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  api:
+    build: .
+    restart: on-failure
+    depends_on:
+      - db
+    environment:
+      DATABASE_URL: postgres://postgres:1234@db:5432/workly
+      JWT_SECRET: "cR8!pL02@xT9$wQ13#zV7%Nf6&mH5*KpB4!sZ"
+    ports:
+      - "4000:4000"
+
+volumes:
+  db_data:
