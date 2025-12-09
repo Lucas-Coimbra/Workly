@@ -1,5 +1,5 @@
 const request = require("supertest");
-const app = require("../src/app");
+const app = require("../../src/app");
 
 describe("Auth routes (smoke)", () => {
   it("should respond on register route", async () => {

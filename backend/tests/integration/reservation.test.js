@@ -1,6 +1,6 @@
 const request = require("supertest");
-const app = require("../src/app");
-const prisma = require("../src/config/prisma");
+const app = require("../../src/app");
+const prisma = require("../../src/config/prisma");
 
 describe("Reservation flow (basic smoke)", () => {
   it("should allow creating reservation endpoint reachable", async () => {
