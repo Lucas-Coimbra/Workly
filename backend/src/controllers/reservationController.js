@@ -11,7 +11,6 @@ exports.create = async (req, res, next) => {
       startTime: data.startTime,
       endTime: data.endTime,
     });
-    // After creating, normally redirect to payment (here we return reservation + payment_url placeholder)
     res
       .status(201)
       .json({ reservation: resv, paymentUrl: `/payments/checkout/${resv.id}` });

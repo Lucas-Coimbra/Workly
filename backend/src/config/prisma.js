@@ -1,4 +1,3 @@
-// singleton prisma client (Prisma 6)
 const { PrismaClient } = require("@prisma/client");
 
 let prisma;

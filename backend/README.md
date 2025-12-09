@@ -20,3 +20,12 @@ docker compose up -d db
 npx prisma generate
 npx prisma migrate dev --name init
 npm run dev
+
+▶ Testes unitários (mock do Prisma)
+npm run test:unit
+
+▶ Testes de integração (usam banco real)
+npm run test:integration
+
+▶ Todos os testes (unificado)
+npm test
