@@ -1,4 +1,8 @@
-export default function Hero({ onNavigate }) {
+import { useNavigate } from "react-router-dom";
+
+export default function Hero() {
+  const navigate = useNavigate();
+
   return (
     <section className="bg-gradient-to-br from-[#E0F2FE] to-[#BFDBFE] py-32">
       <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
@@ -15,13 +19,13 @@ export default function Hero({ onNavigate }) {
           </p>
           <div className="flex gap-4 mb-4">
             <button
-              onClick={() => onNavigate("register")}
+              onClick={() => navigate("/register")}
               className="px-8 py-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg shadow-md hover:scale-105 transition-transform duration-200"
             >
               Começar Gratuitamente
             </button>
             <button
-              onClick={() => onNavigate("login")}
+              onClick={() => navigate("/login")}
               className="px-8 py-4 bg-white border border-gray-300 text-gray-800 font-semibold rounded-lg hover:bg-gray-50 transition-colors"
             >
               Fazer Login

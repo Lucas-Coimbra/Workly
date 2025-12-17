@@ -1,4 +1,8 @@
-export default function CTA({ onNavigate }) {
+import { useNavigate } from "react-router-dom";
+
+export default function CTA() {
+  const navigate = useNavigate();
+
   return (
     <section className="py-24 text-center text-white bg-[linear-gradient(135deg,#2563eb_0%,#1d4ed8_100%)]">
       <div className="max-w-3xl mx-auto px-6">
@@ -9,7 +13,7 @@ export default function CTA({ onNavigate }) {
           Junte-se a centenas de espaços que já utilizam o Workly
         </p>
         <button
-          onClick={() => onNavigate("register")}
+          onClick={() => navigate("/register")}
           className="px-10 py-4 bg-white text-blue-600 font-semibold rounded-lg hover:scale-105 transition"
         >
           Criar Conta Gratuita

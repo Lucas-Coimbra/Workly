@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useMemo, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -17,7 +18,8 @@ import {
   ReserveDialog,
 } from "../components/reservations/ReservationsDialogs";
 
-export default function Reservations({ onNavigate, onLogout, onReserve }) {
+export default function Reservations({ onLogout, onReserve }) {
+  const navigate = useNavigate();
   const today = new Date();
 
   const [selectedDate, setSelectedDate] = useState(today);
@@ -102,7 +104,7 @@ export default function Reservations({ onNavigate, onLogout, onReserve }) {
     <div className="min-h-screen flex-col flex">
       <Header
         userType="member"
-        onNavigate={onNavigate}
+        navigate={navigate}
         onLogout={onLogout}
         currentPage="reservations"
       />

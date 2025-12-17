@@ -1,3 +1,5 @@
+import { useNavigate } from "react-router-dom";
+
 import PaymentMethodOptions from "./PaymentMethodOptions";
 import PaymentMethodForms from "./PaymentMethodForms";
 
@@ -10,8 +12,9 @@ export default function PaymentMethodSelector({
   setCardData,
   accountBalance,
   safeReservation,
-  onNavigate,
 }) {
+  const navigate = useNavigate();
+
   return (
     <div className="flex flex-col">
       {/* BLOCO SUPERIOR */}
@@ -32,7 +35,7 @@ export default function PaymentMethodSelector({
         setCardData={setCardData}
         safeReservation={safeReservation}
         accountBalance={accountBalance}
-        onNavigate={onNavigate}
+        navigate={navigate}
       />
     </div>
   );

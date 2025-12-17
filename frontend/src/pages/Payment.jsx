@@ -8,8 +8,10 @@ import PaymentSuccess from "../components/payment/PaymentSuccess";
 import PaymentMethodSelector from "../components/payment/PaymentMethodSelector";
 import PaymentSummary from "../components/payment/PaymentSummary";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
-export default function Payment({ onNavigate, onLogout }) {
+export default function Payment({ onLogout }) {
+  const navigate = useNavigate();
   const location = useLocation();
   const reservationData = location.state?.reservationData;
 
@@ -79,11 +81,11 @@ export default function Payment({ onNavigate, onLogout }) {
       <div className="min-h-screen flex flex-col">
         <Header
           userType="member"
-          onNavigate={onNavigate}
+          navigate={navigate}
           onLogout={onLogout}
           currentPage="payment"
         />
-        <PaymentEmpty onNavigate={onNavigate} />
+        <PaymentEmpty navigate={navigate} />
         <Footer />
       </div>
     );
@@ -93,14 +95,11 @@ export default function Payment({ onNavigate, onLogout }) {
       <div className="min-h-screen flex flex-col">
         <Header
           userType="member"
-          onNavigate={onNavigate}
+          navigate={navigate}
           onLogout={onLogout}
           currentPage="payment"
         />
-        <PaymentSuccess
-          safeReservation={safeReservation}
-          onNavigate={onNavigate}
-        />
+        <PaymentSuccess safeReservation={safeReservation} navigate={navigate} />
         <Footer />
       </div>
     );
@@ -109,7 +108,7 @@ export default function Payment({ onNavigate, onLogout }) {
     <div className="min-h-screen flex flex-col">
       <Header
         userType="member"
-        onNavigate={onNavigate}
+        navigate={navigate}
         onLogout={onLogout}
         currentPage="payment"
       />
@@ -120,7 +119,7 @@ export default function Payment({ onNavigate, onLogout }) {
             <Button
               variant="ghost"
               className="mb-6 flex items-center"
-              onClick={() => onNavigate("reservations")}
+              onClick={() => navigate("/reservations")}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Voltar para Reservas
@@ -145,7 +144,7 @@ export default function Payment({ onNavigate, onLogout }) {
                 setCardData={setCardData}
                 accountBalance={accountBalance}
                 safeReservation={safeReservation}
-                onNavigate={onNavigate}
+                navigate={navigate}
               />
             </div>
 

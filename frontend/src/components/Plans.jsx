@@ -1,23 +1,23 @@
 const plansData = [
   {
-    name: "Starter",
-    price: "R$ 99",
+    name: "Basic",
+    price: "Free",
     period: "/mês",
     description: "Ideal para começar",
     features: [
-      "Até 50 membros",
+      "Até 30 membros",
       "10 espaços",
       "Suporte por email",
       "Relatórios básicos",
     ],
   },
   {
-    name: "Professional",
-    price: "R$ 299",
+    name: "Gold",
+    price: "R$ 199",
     period: "/mês",
     description: "Para negócios em crescimento",
     features: [
-      "Até 200 membros",
+      "Até 100 membros",
       "Espaços ilimitados",
       "Suporte prioritário",
       "Análises avançadas",
@@ -26,7 +26,7 @@ const plansData = [
     popular: true,
   },
   {
-    name: "Enterprise",
+    name: "Premium",
     price: "Customizado",
     period: "",
     description: "Soluções personalizadas",
@@ -40,7 +40,10 @@ const plansData = [
   },
 ];
 
-export default function Plans({ onNavigate }) {
+import { useNavigate } from "react-router-dom";
+
+export default function Plans() {
+  const navigate = useNavigate();
   return (
     <section id="plans" className="bg-gray-50 py-24">
       <div className="max-w-7xl mx-auto px-6">
@@ -95,7 +98,7 @@ export default function Plans({ onNavigate }) {
                 ))}
               </ul>
               <button
-                onClick={() => onNavigate("register")}
+                onClick={() => navigate("/register")}
                 className={`${
                   plan.popular
                     ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white"

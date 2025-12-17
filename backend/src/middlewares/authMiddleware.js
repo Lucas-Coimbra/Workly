@@ -2,18 +2,20 @@ const jwt = require("jsonwebtoken");
 const prisma = require("../config/prisma");
 
 const verifyToken = (req, res, next) => {
-  const header = req.headers.authorization;
-  if (!header) return res.status(401).json({ message: "Token missing" });
-  const parts = header.split(" ");
-  if (parts.length !== 2)
-    return res.status(401).json({ message: "Invalid token" });
-  const token = parts[1];
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader?.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "Token missing or invalid" });
+  }
+
+  const token = authHeader.split(" ")[1];
+
   try {
-    const payload = jwt.verify(token, process.env.JWT_SECRET || "dev_secret");
+    const payload = jwt.verify(token, process.env.JWT_SECRET);
     req.userId = payload.userId;
     req.userRole = payload.role;
     next();
-  } catch (err) {
+  } catch {
     return res.status(401).json({ message: "Invalid token" });
   }
 };

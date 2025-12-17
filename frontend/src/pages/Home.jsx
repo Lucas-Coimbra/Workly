@@ -4,15 +4,18 @@ import Features from "../components/Features";
 import Plans from "../components/Plans";
 import CTA from "../components/CTA";
 import Footer from "../components/Footer";
+import { useNavigate } from "react-router-dom";
 
-export default function Home({ onNavigate }) {
+export default function Home() {
+  const navigate = useNavigate();
+
   return (
     <div>
-      <Navbar onNavigate={onNavigate} />
-      <Hero onNavigate={onNavigate} />
+      <Navbar navigate={navigate} />
+      <Hero navigate={navigate} />
       <Features />
-      <Plans onNavigate={onNavigate} />
-      <CTA onNavigate={onNavigate} />
+      <Plans navigate={navigate} />
+      <CTA navigate={navigate} />
       <Footer />
     </div>
   );

@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Input, Label, Button } from "@/components/ui";
 import {
@@ -17,8 +18,9 @@ export default function PaymentMethodForms({
   setCardData,
   safeReservation,
   accountBalance,
-  onNavigate,
 }) {
+  const navigate = useNavigate();
+
   const total = safeReservation?.total ?? 0;
   const accountCovers = accountBalance >= total;
 
@@ -201,7 +203,7 @@ export default function PaymentMethodForms({
           <Button
             variant="outline"
             className="w-full mt-3"
-            onClick={() => onNavigate?.("profile")}
+            onClick={() => navigate?.("/profile")}
           >
             Adicionar Créditos
           </Button>

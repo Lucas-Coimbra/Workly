@@ -8,7 +8,7 @@ import {
   TableBody,
   TableCell,
 } from "@/components/ui";
-import StatusBadge from "@/components/ui/StatusBadge.jsx";
+import StatusBadge from "@/components/ui/StatusBadge";
 import { FileText, Download, Calendar, Clock } from "lucide-react";
 
 export default function ReservationsTable({ reservations, onOpenDetails }) {

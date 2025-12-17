@@ -33,6 +33,7 @@ import {
 } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { useNavigate } from "react-router-dom";
 
 const revenueData = [
   { month: "Abr", value: 12000 },
@@ -49,12 +50,14 @@ const occupancyData = [
   { name: "Disponível", value: 35, color: "#cbd5e1" },
 ];
 
-export default function AdminDashboard({ onNavigate, onLogout }) {
+export default function AdminDashboard({ onLogout }) {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header
         userType="admin"
-        onNavigate={onNavigate}
+        navigate={navigate}
         onLogout={onLogout}
         currentPage="admin-dashboard"
       />
@@ -76,7 +79,7 @@ export default function AdminDashboard({ onNavigate, onLogout }) {
                   Exportar Relatório
                 </Button>
                 <Button
-                  onClick={() => onNavigate("space-management")}
+                  onClick={() => navigate("/space-management")}
                   className="bg-blue-500 hover:bg-blue-600 text-white border-2 border-white/20"
                 >
                   <Plus className="w-4 h-4 mr-2" />
@@ -304,7 +307,7 @@ export default function AdminDashboard({ onNavigate, onLogout }) {
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-gray-900">Gestão de Espaços</h3>
                 <Button
-                  onClick={() => onNavigate("space-management")}
+                  onClick={() => navigate("/space-management")}
                   className="bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   <Plus className="w-4 h-4 mr-2" />
