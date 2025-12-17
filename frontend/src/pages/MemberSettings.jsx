@@ -80,8 +80,10 @@ export default function Settings({ onLogout }) {
       />
       <main className="flex-1 bg-gray-50">
         <div className="max-w-4xl mx-auto px-6 py-8">
-          <h1 className="text-gray-900">Configurações</h1>
-          <p className="text-gray-600 mt-1">
+          <h1 className="text-2xl font-semibold text-gray-900 mb-2">
+            Configurações
+          </h1>
+          <p className="text-base text-gray-600 mb-6">
             Gerencie suas preferências e configurações da conta
           </p>
 
