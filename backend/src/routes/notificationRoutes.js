@@ -1,8 +1,8 @@
 const router = require("express").Router();
-const { authMiddleware } = require("../middlewares/authMiddleware");
+const { verifyToken } = require("../middlewares/authMiddleware");
 const notificationController = require("../controllers/notificationController");
 
-router.use(authMiddleware);
+router.use(verifyToken);
 
 router.get("/", notificationController.list);
 router.patch("/:id/read", notificationController.markAsRead);

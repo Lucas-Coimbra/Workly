@@ -1,4 +1,4 @@
-import { Card, Button } from "../ui";
+import { Card, Button } from "@/components/ui";
 import { CreditCard } from "lucide-react";
 
 export default function PaymentMethods({ cards }) {

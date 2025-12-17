@@ -25,7 +25,7 @@ export function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "border border-gray-300 flex w-full items-center justify-between gap-2 rounded-md bg-white px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:cursor-not-allowed disabled:opacity-50",
+        "border border-gray-300 flex w-full items-center justify-between gap-2 rounded-md bg-white px-3 py-2 text-sm text-gray-700 focus:outline-none focus:ring-2  disabled:cursor-not-allowed disabled:opacity-50",
         size === "sm" ? "h-8" : "h-9",
         className
       )}

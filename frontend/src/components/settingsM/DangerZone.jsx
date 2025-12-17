@@ -1,4 +1,4 @@
-import { Card, Button } from "../ui";
+import { Card, Button } from "@/components/ui";
 import { AlertCircle, Trash2 } from "lucide-react";
 
 export default function DangerZone({ handleDeleteAccount }) {
@@ -22,7 +22,7 @@ export default function DangerZone({ handleDeleteAccount }) {
         </p>
         <Button
           variant="outline"
-          className="border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700"
+          className="bg-white border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700"
           onClick={handleDeleteAccount}
         >
           <Trash2 className="w-4 h-4 mr-2" /> Excluir Minha Conta

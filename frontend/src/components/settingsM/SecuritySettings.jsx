@@ -1,5 +1,6 @@
-import { Card, Label, Switch, Input, Button, Separator } from "../ui";
+import { Card, Label, Input, Button } from "@/components/ui";
 import { Lock, Shield, Eye, EyeOff } from "lucide-react";
+import ToggleSwitch from "../ToggleSwitch";
 
 export default function SecuritySettings({
   twoFactorAuth,
@@ -48,6 +49,7 @@ export default function SecuritySettings({
 
   return (
     <Card className="p-6">
+      {/* Header */}
       <div className="flex items-center gap-3 mb-6">
         <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
           <Lock className="w-5 h-5 text-green-600" />
@@ -59,8 +61,8 @@ export default function SecuritySettings({
       </div>
 
       <div className="space-y-6">
-        {/* 2FA */}
-        <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg mb-4">
+        {/* Autenticação de Dois Fatores */}
+        <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <div className="flex items-center gap-3">
             <Shield className="w-5 h-5 text-blue-600" />
             <div>
@@ -72,10 +74,13 @@ export default function SecuritySettings({
               </p>
             </div>
           </div>
-          <Switch checked={twoFactorAuth} onCheckedChange={setTwoFactorAuth} />
+
+          {/* ToggleSwitch Component */}
+          <ToggleSwitch isChecked={twoFactorAuth} onChange={setTwoFactorAuth} />
         </div>
 
-        <Separator />
+        {/* Separador */}
+        <div className="border-t border-gray-200"></div>
 
         {/* Alterar Senha */}
         <div className="space-y-4">
@@ -88,7 +93,7 @@ export default function SecuritySettings({
                   placeholder={f.placeholder}
                   value={f.value}
                   onChange={(e) => f.setter(e.target.value)}
-                  className="pr-10"
+                  className="pr-10 bg-gray-100 border border-gray-300 focus:border-gray-500 focus:ring-2 focus:ring-gray-300 focus:ring-opacity-50 transition-colors duration-200"
                 />
                 <button
                   type="button"
@@ -105,6 +110,7 @@ export default function SecuritySettings({
               {f.note && <p className="text-xs text-gray-500 mt-1">{f.note}</p>}
             </div>
           ))}
+
           <Button
             className="w-full mt-4 bg-green-600 hover:bg-green-700"
             onClick={handleChangePassword}

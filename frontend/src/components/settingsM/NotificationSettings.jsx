@@ -1,5 +1,6 @@
-import { Card, Switch, Label, Separator, Button } from "../ui";
+import { Card, Label, Button } from "@/components/ui";
 import { Bell, Mail, Smartphone } from "lucide-react";
+import ToggleSwitch from "../ToggleSwitch";
 
 export default function NotificationSettings({
   emailNotifications,
@@ -14,6 +15,44 @@ export default function NotificationSettings({
   setWeeklyReport,
   handleSaveNotifications,
 }) {
+  const notifications = [
+    {
+      icon: <Mail className="w-4 h-4 text-gray-500" />,
+      label: "Notificações por E-mail",
+      description: "Receba atualizações por e-mail",
+      value: emailNotifications,
+      setter: setEmailNotifications,
+    },
+    {
+      icon: <Smartphone className="w-4 h-4 text-gray-500" />,
+      label: "Notificações por SMS",
+      description: "Receba alertas por mensagem de texto",
+      value: smsNotifications,
+      setter: setSmsNotifications,
+    },
+    {
+      icon: <Bell className="w-4 h-4 text-gray-500" />,
+      label: "Lembretes de Reserva",
+      description: "Receba lembretes antes das suas reservas",
+      value: reservationReminders,
+      setter: setReservationReminders,
+    },
+    {
+      icon: <Mail className="w-4 h-4 text-gray-500" />,
+      label: "E-mails Promocionais",
+      description: "Receba ofertas e novidades",
+      value: promotionalEmails,
+      setter: setPromotionalEmails,
+    },
+    {
+      icon: <Mail className="w-4 h-4 text-gray-500" />,
+      label: "Relatório Semanal",
+      description: "Resumo semanal de suas atividades",
+      value: weeklyReport,
+      setter: setWeeklyReport,
+    },
+  ];
+
   return (
     <Card className="p-6">
       <div className="flex items-center gap-3 mb-6">
@@ -29,86 +68,23 @@ export default function NotificationSettings({
       </div>
 
       <div className="space-y-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Mail className="w-4 h-4 text-gray-500" />
-            <div>
-              <Label className="text-gray-900">Notificações por E-mail</Label>
-              <p className="text-sm text-gray-600">
-                Receba atualizações por e-mail
-              </p>
+        {notifications.map((n, idx) => (
+          <div key={idx}>
+            <div className="flex items-center justify-between py-2">
+              <div className="flex items-center gap-3">
+                {n.icon}
+                <div>
+                  <Label className="text-gray-900">{n.label}</Label>
+                  <p className="text-sm text-gray-600">{n.description}</p>
+                </div>
+              </div>
+              <ToggleSwitch isChecked={n.value} onChange={n.setter} />
             </div>
+            {idx < notifications.length - 1 && (
+              <div className="border-t border-gray-200 my-2"></div>
+            )}
           </div>
-          <Switch
-            checked={emailNotifications}
-            onCheckedChange={setEmailNotifications}
-          />
-        </div>
-        <Separator />
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Smartphone className="w-4 h-4 text-gray-500" />
-            <div>
-              <Label className="text-gray-900">Notificações por SMS</Label>
-              <p className="text-sm text-gray-600">
-                Receba alertas por mensagem de texto
-              </p>
-            </div>
-          </div>
-          <Switch
-            checked={smsNotifications}
-            onCheckedChange={setSmsNotifications}
-          />
-        </div>
-        <Separator />
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Bell className="w-4 h-4 text-gray-500" />
-            <div>
-              <Label className="text-gray-900">Lembretes de Reserva</Label>
-              <p className="text-sm text-gray-600">
-                Receba lembretes antes das suas reservas
-              </p>
-            </div>
-          </div>
-          <Switch
-            checked={reservationReminders}
-            onCheckedChange={setReservationReminders}
-          />
-        </div>
-        <Separator />
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Mail className="w-4 h-4 text-gray-500" />
-            <div>
-              <Label className="text-gray-900">E-mails Promocionais</Label>
-              <p className="text-sm text-gray-600">
-                Receba ofertas e novidades
-              </p>
-            </div>
-          </div>
-          <Switch
-            checked={promotionalEmails}
-            onCheckedChange={setPromotionalEmails}
-          />
-        </div>
-        <Separator />
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Mail className="w-4 h-4 text-gray-500" />
-            <div>
-              <Label className="text-gray-900">Relatório Semanal</Label>
-              <p className="text-sm text-gray-600">
-                Resumo semanal de suas atividades
-              </p>
-            </div>
-          </div>
-          <Switch checked={weeklyReport} onCheckedChange={setWeeklyReport} />
-        </div>
+        ))}
       </div>
 
       <Button

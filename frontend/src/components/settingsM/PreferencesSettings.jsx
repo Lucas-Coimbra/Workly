@@ -7,7 +7,7 @@ import {
   SelectValue,
   SelectContent,
   SelectItem,
-} from "../ui";
+} from "@/components/ui";
 import { Globe } from "lucide-react";
 
 export default function PreferencesSettings({
@@ -35,10 +35,11 @@ export default function PreferencesSettings({
       </div>
 
       <div className="space-y-4">
+        {/* Idioma */}
         <div>
           <Label>Idioma</Label>
           <Select value={language} onValueChange={setLanguage}>
-            <SelectTrigger className="mt-2">
+            <SelectTrigger className="mt-2 bg-gray-200 text-black focus:outline-none border border-gray-300">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -51,10 +52,11 @@ export default function PreferencesSettings({
           </Select>
         </div>
 
+        {/* Fuso Horário */}
         <div>
           <Label>Fuso Horário</Label>
           <Select value={timezone} onValueChange={setTimezone}>
-            <SelectTrigger className="mt-2">
+            <SelectTrigger className="mt-2 bg-gray-200 text-black focus:outline-none border border-gray-300">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -67,10 +69,11 @@ export default function PreferencesSettings({
           </Select>
         </div>
 
+        {/* Moeda */}
         <div>
           <Label>Moeda</Label>
           <Select value={currency} onValueChange={setCurrency}>
-            <SelectTrigger className="mt-2">
+            <SelectTrigger className="mt-2 bg-gray-200 text-black focus:outline-none border border-gray-300">
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
