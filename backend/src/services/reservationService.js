@@ -1,4 +1,5 @@
 const prisma = require("../config/prisma");
+const { createNotification } = require("./notificationService");
 
 async function createReservation({ userId, roomId, date, startTime, endTime }) {
   // Check double booking: same room overlapping
@@ -17,7 +18,7 @@ async function createReservation({ userId, roomId, date, startTime, endTime }) {
   });
   if (overlapping) throw { status: 409, message: "Time slot already booked" };
 
-  return prisma.reservation.create({
+  const reservation = await prisma.reservation.create({
     data: {
       userId,
       roomId,
@@ -27,6 +28,15 @@ async function createReservation({ userId, roomId, date, startTime, endTime }) {
       paid: false,
     },
   });
+
+  await createNotification({
+    userId,
+    title: "Reserva confirmada",
+    message: "Sua reserva foi criada com sucesso.",
+    type: "SUCCESS",
+  });
+
+  return reservation;
 }
 
 async function getReservation(id) {
@@ -38,7 +48,18 @@ async function listReservationsForUser(userId) {
 }
 
 async function cancelReservation(id) {
-  return prisma.reservation.delete({ where: { id } });
+  const reservation = await prisma.reservation.delete({
+    where: { id },
+  });
+
+  await createNotification({
+    userId: reservation.userId,
+    title: "Reserva cancelada",
+    message: "Sua reserva foi cancelada.",
+    type: "WARNING",
+  });
+
+  return reservation;
 }
 
 module.exports = {

@@ -7,11 +7,18 @@ const workspaceRoutes = require("./routes/workspaceRoutes");
 const roomRoutes = require("./routes/roomRoutes");
 const reservationRoutes = require("./routes/reservationRoutes");
 const adminRoutes = require("./routes/adminRoutes");
+const notificationRoutes = require("./routes/notificationRoutes");
 
 const { errorHandler } = require("./middlewares/errorMiddleware");
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://localhost:5173",
+    credentials: true,
+  })
+);
+
 app.use(express.json());
 
 // routes
@@ -21,6 +28,7 @@ app.use("/api/workspaces", workspaceRoutes);
 app.use("/api/rooms", roomRoutes);
 app.use("/api/reservations", reservationRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // error handler
 app.use(errorHandler);

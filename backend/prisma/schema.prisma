@@ -11,14 +11,28 @@ model User {
   id        Int      @id @default(autoincrement())
   name      String
   email     String   @unique
+  phone     String
   password  String
   role      Role     @default(MEMBER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  workspaces Workspace[]
-  tasks      Task[]
-  reservations Reservation[]
+  workspaces          Workspace[]
+  tasks               Task[]
+  reservations        Reservation[]
+  notifications       Notification[]
+  passwordResetTokens PasswordResetToken[]
+}
+
+model PasswordResetToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+  userId    Int
+  used      Boolean  @default(false)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id])
 }
 
 enum Role {
@@ -34,18 +48,18 @@ model Workspace {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  owner User @relation(fields: [ownerId], references: [id])
+  owner User   @relation(fields: [ownerId], references: [id])
   rooms Room[]
   tasks Task[]
 }
 
 model Room {
-  id         Int      @id @default(autoincrement())
-  name       String
-  type       RoomType
-  capacity   Int
-  workspaceId Int
-  workspace  Workspace @relation(fields: [workspaceId], references: [id])
+  id           Int           @id @default(autoincrement())
+  name         String
+  type         RoomType
+  capacity     Int
+  workspaceId  Int
+  workspace    Workspace     @relation(fields: [workspaceId], references: [id])
   reservations Reservation[]
 }
 
@@ -65,8 +79,8 @@ model Reservation {
   paid      Boolean  @default(false)
   createdAt DateTime @default(now())
 
-  user User @relation(fields:[userId], references:[id])
-  room Room @relation(fields:[roomId], references:[id])
+  user User @relation(fields: [userId], references: [id])
+  room Room @relation(fields: [roomId], references: [id])
 }
 
 model Task {
@@ -89,19 +103,33 @@ model Task {
 }
 
 model Tag {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
-  createdAt DateTime @default(now())
-  tasks TaskTag[]
+  id        Int       @id @default(autoincrement())
+  name      String    @unique
+  createdAt DateTime  @default(now())
+  tasks     TaskTag[]
 }
 
 model TaskTag {
-  id Int @id @default(autoincrement())
+  id     Int  @id @default(autoincrement())
   taskId Int
-  tagId Int
-  task Task @relation(fields:[taskId], references:[id])
-  tag Tag @relation(fields:[tagId], references:[id])
+  tagId  Int
+  task   Task @relation(fields: [taskId], references: [id])
+  tag    Tag  @relation(fields: [tagId], references: [id])
+
   @@unique([taskId, tagId])
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  title     String
+  message   String
+  type      String   @default("INFO")
+  read      Boolean  @default(false)
+
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
 }
 
 enum TaskStatus {

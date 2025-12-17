@@ -14,13 +14,16 @@ import {
 } from "lucide-react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { useNavigate } from "react-router-dom";
 
-export default function MemberDashboard({ onNavigate, onLogout }) {
+export default function MemberDashboard({ onLogout }) {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen flex flex-col">
       <Header
         userType="member"
-        onNavigate={onNavigate}
+        navigate={navigate}
         onLogout={onLogout}
         currentPage="member-dashboard"
       />
@@ -69,7 +72,7 @@ export default function MemberDashboard({ onNavigate, onLogout }) {
                   Dashboard
                 </Button>
                 <Button
-                  onClick={() => onNavigate("reservations")}
+                  onClick={() => navigate("/reservations")}
                   variant="ghost"
                   className="w-full justify-start text-gray-700 hover:bg-gray-100"
                 >
@@ -77,7 +80,7 @@ export default function MemberDashboard({ onNavigate, onLogout }) {
                   Reservas
                 </Button>
                 <Button
-                  onClick={() => onNavigate("history")}
+                  onClick={() => navigate("/history")}
                   variant="ghost"
                   className="w-full justify-start text-gray-700 hover:bg-gray-100"
                 >
@@ -85,7 +88,7 @@ export default function MemberDashboard({ onNavigate, onLogout }) {
                   Histórico
                 </Button>
                 <Button
-                  onClick={() => onNavigate("payment")}
+                  onClick={() => navigate("/payment")}
                   variant="ghost"
                   className="w-full justify-start text-gray-700 hover:bg-gray-100"
                 >
@@ -93,6 +96,7 @@ export default function MemberDashboard({ onNavigate, onLogout }) {
                   Pagamentos
                 </Button>
                 <Button
+                  onClick={() => navigate("/support")}
                   variant="ghost"
                   className="w-full justify-start text-gray-700 hover:bg-gray-100"
                 >
@@ -100,7 +104,7 @@ export default function MemberDashboard({ onNavigate, onLogout }) {
                   Suporte
                 </Button>
                 <Button
-                  onClick={() => onNavigate("profile")}
+                  onClick={() => navigate("/member-settings")}
                   variant="ghost"
                   className="w-full justify-start text-gray-700 hover:bg-gray-100"
                 >
@@ -153,7 +157,7 @@ export default function MemberDashboard({ onNavigate, onLogout }) {
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="text-gray-900">Próximas Reservas</h3>
                   <Button
-                    onClick={() => onNavigate("reservations")}
+                    onClick={() => navigate("/reservations")}
                     variant="outline"
                     size="sm"
                     className="text-blue-600 border-blue-200 hover:bg-blue-50"
@@ -241,7 +245,7 @@ export default function MemberDashboard({ onNavigate, onLogout }) {
                     </p>
                   </div>
                   <Button
-                    onClick={() => onNavigate("profile")}
+                    onClick={() => navigate("/profile")}
                     className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                   >
                     Gerenciar Plano

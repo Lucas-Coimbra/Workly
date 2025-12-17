@@ -1,7 +1,10 @@
+import { useNavigate } from "react-router-dom";
 import { Card, Button } from "@/components/ui";
 import { MapPin } from "lucide-react";
 
-export default function PaymentEmpty({ onNavigate }) {
+export default function PaymentEmpty() {
+  const navigate = useNavigate();
+
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-160px)] px-4">
       <Card className="p-8 max-w-md w-full text-center">
@@ -17,7 +20,7 @@ export default function PaymentEmpty({ onNavigate }) {
 
         <Button
           className="w-full bg-blue-600 hover:bg-blue-700"
-          onClick={() => onNavigate?.("reservations")}
+          onClick={() => navigate?.("/reservations")}
         >
           Fazer uma Reserva
         </Button>

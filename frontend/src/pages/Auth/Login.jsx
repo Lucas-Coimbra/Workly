@@ -1,9 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import ReCAPTCHA from "../../components/ReCAPTCHA";
 import { useAuth } from "../../hooks/useAuth";
 import LayoutAuth from "../../components/LayoutAuth";
 
-export default function Login({ onNavigate }) {
+export default function Login() {
+  const navigate = useNavigate();
   const { login } = useAuth();
   const [captchaVerified, setCaptchaVerified] = useState(false);
   const [email, setEmail] = useState("");
@@ -12,17 +14,17 @@ export default function Login({ onNavigate }) {
 
   const handleRedirect = (role) => {
     switch (role) {
-      case "member":
-        onNavigate("member-dashboard");
+      case "MEMBER":
+        navigate("/member-dashboard");
         break;
-      case "admin":
-        onNavigate("admin-dashboard");
+      case "ADMIN":
+        navigate("/admin-dashboard");
         break;
-      case "support":
-        onNavigate("support-dashboard");
+      case "SUPPORT":
+        navigate("/support-dashboard");
         break;
       default:
-        onNavigate("home");
+        navigate("/");
     }
   };
 
@@ -36,7 +38,7 @@ export default function Login({ onNavigate }) {
     setLoading(true);
     try {
       const userData = await login(email, password);
-      handleRedirect(userData.role);
+      handleRedirect(userData.user.role);
     } catch (err) {
       alert(err.message);
     } finally {
@@ -45,14 +47,30 @@ export default function Login({ onNavigate }) {
   };
 
   const handleQuickLogin = async (role) => {
-    const demoEmail = `${role}@teste.com`;
-    const demoPassword = `${role}123`;
+    if (!import.meta.env.DEV) return;
+
+    const map = {
+      MEMBER: {
+        email: import.meta.env.VITE_DEV_MEMBER_EMAIL,
+        password: import.meta.env.VITE_DEV_MEMBER_PASSWORD,
+      },
+      ADMIN: {
+        email: import.meta.env.VITE_DEV_ADMIN_EMAIL,
+        password: import.meta.env.VITE_DEV_ADMIN_PASSWORD,
+      },
+      SUPPORT: {
+        email: import.meta.env.VITE_DEV_SUPPORT_EMAIL,
+        password: import.meta.env.VITE_DEV_SUPPORT_PASSWORD,
+      },
+    };
+
+    const creds = map[role];
+    if (!creds) return;
+
     setLoading(true);
     try {
-      const userData = await login(demoEmail, demoPassword);
-      handleRedirect(userData.role); // redireciona para o dashboard correto
-    } catch (err) {
-      alert(err.message);
+      const userData = await login(creds.email, creds.password);
+      handleRedirect(userData.user.role);
     } finally {
       setLoading(false);
     }
@@ -125,7 +143,7 @@ export default function Login({ onNavigate }) {
           </label>
           <button
             type="button"
-            onClick={() => onNavigate("forgot-password")}
+            onClick={() => navigate("/forgot-password")}
             className="text-blue-600 hover:underline"
           >
             Esqueceu a senha?
@@ -198,30 +216,38 @@ export default function Login({ onNavigate }) {
         <div className="mt-4 space-y-2 text-center">
           <p className="text-gray-500 text-sm">Acesso rápido (demo):</p>
           <div className="flex justify-center gap-2 flex-wrap">
-            <button
-              type="button"
-              disabled={loading}
-              onClick={() => handleQuickLogin("member")}
-              className="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 transition"
-            >
-              Entrar como Membro
-            </button>
-            <button
-              type="button"
-              disabled={loading}
-              onClick={() => handleQuickLogin("admin")}
-              className="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 transition"
-            >
-              Entrar como Admin
-            </button>
-            <button
-              type="button"
-              disabled={loading}
-              onClick={() => handleQuickLogin("support")}
-              className="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 transition"
-            >
-              Entrar como Suporte
-            </button>
+            {import.meta.env.DEV && (
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => handleQuickLogin("MEMBER")}
+                className="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 transition"
+              >
+                Entrar como Membro
+              </button>
+            )}
+
+            {import.meta.env.DEV && (
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => handleQuickLogin("ADMIN")}
+                className="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 transition"
+              >
+                Entrar como Admin
+              </button>
+            )}
+
+            {import.meta.env.DEV && (
+              <button
+                type="button"
+                disabled={loading}
+                onClick={() => handleQuickLogin("SUPPORT")}
+                className="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 transition"
+              >
+                Entrar como Suporte
+              </button>
+            )}
           </div>
         </div>
 
@@ -229,17 +255,17 @@ export default function Login({ onNavigate }) {
         <div className="mt-4 text-center text-gray-600 text-sm">
           Não tem uma conta?{" "}
           <button
-            onClick={() => onNavigate("register")}
+            onClick={() => navigate("/register")}
             className="text-blue-600 hover:underline font-medium"
           >
             Cadastre-se gratuitamente
           </button>
         </div>
 
-        {/* Voltar para Home */}
+        {/* Voltar para  */}
         <div className="mt-4 text-center">
           <button
-            onClick={() => onNavigate("home")}
+            onClick={() => navigate("/")}
             className="inline-flex items-center gap-1 text-gray-600 hover:underline text-sm"
           >
             <svg

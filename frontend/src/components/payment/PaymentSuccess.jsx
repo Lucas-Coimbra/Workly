@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { Card, Button, Separator } from "@/components/ui";
 import {
   CheckCircle,
@@ -7,7 +8,9 @@ import {
   Users,
 } from "lucide-react";
 
-export default function PaymentSuccess({ safeReservation, onNavigate }) {
+export default function PaymentSuccess({ safeReservation }) {
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen flex flex-col">
       <main className="flex-1 bg-gray-50 flex items-center justify-center py-12">
@@ -65,13 +68,13 @@ export default function PaymentSuccess({ safeReservation, onNavigate }) {
             <Button
               variant="outline"
               className="flex-1"
-              onClick={() => onNavigate?.("reservations")}
+              onClick={() => navigate?.("/reservations")}
             >
               Nova Reserva
             </Button>
             <Button
               className="flex-1 bg-blue-600 hover:bg-blue-700"
-              onClick={() => onNavigate?.("history")}
+              onClick={() => navigate?.("/history")}
             >
               Ver Histórico
             </Button>

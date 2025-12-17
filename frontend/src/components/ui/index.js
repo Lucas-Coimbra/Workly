@@ -61,3 +61,7 @@ export { Input } from "./Input";
 export { RadioGroup, RadioGroupItem } from "./radio-group";
 
 export { Separator } from "./Separator";
+
+export { Tabs, TabsList, TabsTrigger, TabsContent } from "./Tabs";
+
+export { Switch } from "./Switch";

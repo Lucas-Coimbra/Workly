@@ -6,8 +6,10 @@ import Filters from "../components/history/Filters";
 import ReservationsTable from "../components/history/ReservationsTable";
 import ReservationDetailsModal from "../components/history/ReservationDetailsModal";
 import { historyMock } from "../mocks/historyMock";
+import { useNavigate } from "react-router-dom";
 
-export default function History({ onNavigate, onLogout }) {
+export default function History({ onLogout }) {
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [dateFilter, setDateFilter] = useState("all");
@@ -40,7 +42,7 @@ export default function History({ onNavigate, onLogout }) {
     <div className="min-h-screen flex flex-col">
       <Header
         userType="member"
-        onNavigate={onNavigate}
+        navigate={navigate}
         onLogout={onLogout}
         currentPage="history"
       />

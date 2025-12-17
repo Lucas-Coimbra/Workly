@@ -1,12 +1,16 @@
-import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthProvider";
-import { useContext } from "react";
-import { AuthContext } from "./context/AuthContext";
+
+import ProtectedRoute from "./routes/ProtectedRoute";
+import { Navigate } from "react-router-dom";
 
 import Home from "./pages/Home";
+import SpaceRequest from "./pages/SpaceRequest";
+
 import Login from "./pages/Auth/Login";
 import Register from "./pages/Auth/Register";
 import ForgotPassword from "./pages/Auth/ForgotPassword";
+import ResetPassword from "./pages/Auth/ResetPassword";
 
 import MemberDashboard from "./pages/MemberDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
@@ -14,159 +18,43 @@ import SupportDashboard from "./pages/SupportDashboard";
 import Reservations from "./pages/Reservations";
 import Payment from "./pages/Payment";
 import History from "./pages/History";
+import MemberSupport from "./pages/MemberSupport";
+import MemberSettings from "./pages/MemberSettings";
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <AuthProvider>
-        <RoutesWrapper />
-      </AuthProvider>
-    </BrowserRouter>
-  );
-}
+    <AuthProvider>
+      <Routes>
+        {/* públicas */}
+        <Route path="/" element={<Home />} />
+        <Route path="/home" element={<Navigate to="/" replace />} />
+        <Route path="/space-request" element={<SpaceRequest />} />
 
-function RoutesWrapper() {
-  const navigate = useNavigate();
-  const { user, isAuthenticated, logout } = useContext(AuthContext);
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
 
-  const handleNavigate = (page) => {
-    switch (page) {
-      case "login":
-        navigate("/login");
-        break;
-      case "register":
-        navigate("/register");
-        break;
-      case "forgot-password":
-        navigate("/forgot-password");
-        break;
-      case "member-dashboard":
-        navigate("/member-dashboard");
-        break;
-      case "reservations":
-        navigate("/reservations");
-        break;
-      case "payment":
-        navigate("/payment");
-        break;
-      case "history":
-        navigate("/history");
-        break;
-      case "admin-dashboard":
-        navigate("/admin-dashboard");
-        break;
-      case "support-dashboard":
-        navigate("/support-dashboard");
-        break;
-      case "home":
-      default:
-        navigate("/");
-        break;
-    }
-  };
+        {/* MEMBER */}
+        <Route element={<ProtectedRoute allowedRoles={["MEMBER"]} />}>
+          <Route path="/member-dashboard" element={<MemberDashboard />} />
+          <Route path="/member-settings" element={<MemberSettings />} />
+          <Route path="/reservations" element={<Reservations />} />
+          <Route path="/payment" element={<Payment />} />
+          <Route path="/history" element={<History />} />
+          <Route path="/support" element={<MemberSupport />} />
+        </Route>
 
-  const handleLogout = async () => {
-    await logout();
-    navigate("/login");
-  };
+        {/* ADMIN */}
+        <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
+          <Route path="/admin-dashboard" element={<AdminDashboard />} />
+        </Route>
 
-  const handleReserve = (reservationData) => {
-    navigate("/payment", { state: { reservationData } });
-  };
-
-  return (
-    <Routes>
-      <Route path="/" element={<Home onNavigate={handleNavigate} />} />
-      <Route
-        path="/register"
-        element={<Register onNavigate={handleNavigate} />}
-      />
-      <Route
-        path="/forgot-password"
-        element={<ForgotPassword onNavigate={handleNavigate} />}
-      />
-      <Route path="/login" element={<Login onNavigate={handleNavigate} />} />
-
-      <Route
-        path="/member-dashboard"
-        element={
-          isAuthenticated && user?.role === "member" ? (
-            <MemberDashboard
-              onNavigate={handleNavigate}
-              onLogout={handleLogout}
-            />
-          ) : (
-            <Login onNavigate={handleNavigate} />
-          )
-        }
-      />
-
-      <Route
-        path="/reservations"
-        element={
-          isAuthenticated && user?.role === "member" ? (
-            <Reservations
-              onNavigate={handleNavigate}
-              onLogout={handleLogout}
-              onReserve={handleReserve}
-            />
-          ) : (
-            <Login onNavigate={handleNavigate} />
-          )
-        }
-      />
-
-      <Route
-        path="/payment"
-        element={
-          isAuthenticated && user?.role === "member" ? (
-            <Payment onNavigate={handleNavigate} onLogout={handleLogout} />
-          ) : (
-            <Login onNavigate={handleNavigate} />
-          )
-        }
-      />
-
-      <Route
-        path="/history"
-        element={
-          isAuthenticated && user?.role === "member" ? (
-            <History onNavigate={handleNavigate} onLogout={handleLogout} />
-          ) : (
-            <Login onNavigate={handleNavigate} />
-          )
-        }
-      />
-
-      {/* Dashboard do admin */}
-      <Route
-        path="/admin-dashboard"
-        element={
-          isAuthenticated && user?.role === "admin" ? (
-            <AdminDashboard
-              onNavigate={handleNavigate}
-              onLogout={handleLogout}
-            />
-          ) : (
-            <Login onNavigate={handleNavigate} />
-          )
-        }
-      />
-
-      {/* Dashboard do suporte */}
-      <Route
-        path="/support-dashboard"
-        element={
-          isAuthenticated && user?.role === "support" ? (
-            <SupportDashboard
-              onNavigate={handleNavigate}
-              onLogout={handleLogout}
-            />
-          ) : (
-            <Login onNavigate={handleNavigate} />
-          )
-        }
-      />
-    </Routes>
+        {/* SUPPORT */}
+        <Route element={<ProtectedRoute allowedRoles={["SUPPORT"]} />}>
+          <Route path="/support-dashboard" element={<SupportDashboard />} />
+        </Route>
+      </Routes>
+    </AuthProvider>
   );
 }

@@ -1,54 +1,58 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { AuthContext } from "./AuthContext";
-import { mockLogin, mockLogout } from "../mocks/auth";
+import { loginRequest, logoutRequest } from "../services/auth.service";
+import { api } from "../services/api";
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // Recupera dados do localStorage ao iniciar
   useEffect(() => {
     const savedToken = localStorage.getItem("authToken");
     const savedUser = localStorage.getItem("authUser");
+
     if (savedToken && savedUser) {
       setToken(savedToken);
       setUser(JSON.parse(savedUser));
+      api.defaults.headers.common.Authorization = `Bearer ${savedToken}`;
     }
+
+    setLoading(false);
   }, []);
 
-  /**
-   * Login usando mock
-   * @param {string} email
-   * @param {string} password
-   */
-  const login = async (email, password) => {
-    try {
-      const userData = await mockLogin(email, password);
-      setUser(userData);
-      setToken(userData.token);
-      localStorage.setItem("authUser", JSON.stringify(userData));
-      localStorage.setItem("authToken", userData.token);
-      return userData;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
-  };
+  const login = useCallback(async (email, password) => {
+    const data = await loginRequest(email, password);
 
-  // Logout usando mock
-  const logout = async () => {
-    await mockLogout();
+    setUser(data.user);
+    setToken(data.token);
+
+    localStorage.setItem("authUser", JSON.stringify(data.user));
+    localStorage.setItem("authToken", data.token);
+
+    api.defaults.headers.common.Authorization = `Bearer ${data.token}`;
+
+    return data;
+  }, []);
+
+  const logout = useCallback(async () => {
+    await logoutRequest();
     setUser(null);
     setToken(null);
-    localStorage.removeItem("authUser");
-    localStorage.removeItem("authToken");
-  };
-
-  const isAuthenticated = !!token;
+    localStorage.clear();
+    delete api.defaults.headers.common.Authorization;
+  }, []);
 
   return (
     <AuthContext.Provider
-      value={{ user, token, isAuthenticated, login, logout }}
+      value={{
+        user,
+        token,
+        isAuthenticated: !!user && !!token,
+        login,
+        logout,
+        loading,
+      }}
     >
       {children}
     </AuthContext.Provider>

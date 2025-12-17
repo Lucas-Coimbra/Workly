@@ -32,13 +32,16 @@ import {
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { useNavigate } from "react-router-dom";
 
-export default function SupportDashboard({ onNavigate, onLogout }) {
+export default function SupportDashboard({ onLogout }) {
+  const navigate = useNavigate();
+
   return (
     <div className="flex min-h-screen flex-col">
       <Header
         userType="support"
-        onNavigate={onNavigate}
+        navigate={navigate}
         onLogout={onLogout}
         currentPage="support-dashboard"
       />
