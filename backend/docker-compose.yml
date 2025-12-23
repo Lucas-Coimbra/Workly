@@ -1,6 +1,7 @@
 services:
   db:
     image: postgres:15
+    container_name: workly-db
     restart: always
     environment:
       POSTGRES_USER: postgres
@@ -12,15 +13,16 @@ services:
       - db_data:/var/lib/postgresql/data
 
   api:
+    container_name: workly-api
     build: .
     restart: on-failure
     depends_on:
       - db
-    environment:
-      JWT_SECRET: ${JWT_SECRET}
-      DATABASE_URL: ${DATABASE_URL}
+    env_file:
+      - .env.docker
     ports:
       - "4000:4000"
+    command: sh -c "npx prisma migrate deploy && node src/server.js"
 
 volumes:
   db_data:

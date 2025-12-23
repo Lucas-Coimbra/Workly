@@ -35,7 +35,7 @@ export default function Register() {
       setLoading(true);
 
       // 1. Cadastro
-      const data = await registerRequest({
+      await registerRequest({
         name,
         email,
         phone,
@@ -51,10 +51,10 @@ export default function Register() {
        */
 
       // 2. Login automático
-      login(data);
+      await login(email, password);
 
       // 3. Redireciona
-      navigate("/dashboard");
+      navigate("/member-dashboard");
     } catch (err) {
       setError(err?.response?.data?.message || "Erro ao criar conta");
     } finally {

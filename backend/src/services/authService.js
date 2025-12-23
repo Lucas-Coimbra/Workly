@@ -10,10 +10,18 @@ async function register({ name, email, password, phone }) {
   });
 
   if (existing) {
-    throw { status: 409, message: "Email already registered" };
+    throw { status: 409, message: "Email já registrado!" };
   }
 
   const hash = await bcrypt.hash(password, 10);
+
+  const basicPlan = await prisma.plan.findUnique({
+    where: { name: "BASIC" },
+  });
+
+  if (!basicPlan) {
+    throw new Error("Plano BASIC não encontrado");
+  }
 
   const user = await prisma.user.create({
     data: {
@@ -21,14 +29,17 @@ async function register({ name, email, password, phone }) {
       email,
       phone,
       password: hash,
+      planId: basicPlan.id,
     },
   });
 
-  await createNotification({
-    userId: user.id,
-    title: "Bem-vindo ao Workly 🎉",
-    message: "Sua conta foi criada com sucesso. Aproveite a plataforma!",
-    type: "SUCCESS",
+  await prisma.notification.create({
+    data: {
+      userId: user.id,
+      title: "Bem-vindo ao Workly 🎉",
+      message:
+        "Sua conta foi criada com sucesso! Agora você já pode reservar espaços, gerenciar suas atividades e muito mais.",
+    },
   });
 
   // 🔐 gera token igual ao login
@@ -60,13 +71,6 @@ async function login({ email, password }) {
     { expiresIn: "7d" }
   );
   const { password: _, ...userSafe } = user;
-
-  await createNotification({
-    userId: user.id,
-    title: "Novo login",
-    message: "Você entrou na sua conta.",
-    type: "INFO",
-  });
 
   return {
     token,

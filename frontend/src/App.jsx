@@ -20,6 +20,7 @@ import Payment from "./pages/Payment";
 import History from "./pages/History";
 import MemberSupport from "./pages/MemberSupport";
 import MemberSettings from "./pages/MemberSettings";
+import MemberProfile from "./pages/MemberProfile";
 
 export default function App() {
   return (
@@ -38,6 +39,7 @@ export default function App() {
         {/* MEMBER */}
         <Route element={<ProtectedRoute allowedRoles={["MEMBER"]} />}>
           <Route path="/member-dashboard" element={<MemberDashboard />} />
+          <Route path="/member-profile" element={<MemberProfile />} />
           <Route path="/member-settings" element={<MemberSettings />} />
           <Route path="/reservations" element={<Reservations />} />
           <Route path="/payment" element={<Payment />} />

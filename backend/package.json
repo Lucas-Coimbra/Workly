@@ -38,5 +38,8 @@
     "setupFiles": [
       "<rootDir>/tests/setup.js"
     ]
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
   }
 }

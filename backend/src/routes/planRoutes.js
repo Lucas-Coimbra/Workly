@@ -1,0 +1,10 @@
+const express = require("express");
+const router = express.Router();
+
+const planController = require("../controllers/planController");
+
+// público
+router.get("/", planController.listPlans);
+router.get("/:name", planController.getPlan);
+
+module.exports = router;
