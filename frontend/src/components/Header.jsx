@@ -1,13 +1,17 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { useNotifications } from "../hooks/useNotifications";
+import { timeAgo } from "../../utils/timeAgo";
 
 export default function Header() {
   const [showUserMenu, setShowUserMenu] = useState(false);
-
+  const [showNotifications, setShowNotifications] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const { user, logout, isAuthenticated } = useAuth();
+  const { notifications, unreadCount, markRead, markAll, remove } =
+    useNotifications();
 
   if (!isAuthenticated || !user) return null;
 
@@ -34,6 +38,7 @@ export default function Header() {
       { label: "Reservas", path: "/reservations" },
       { label: "Pagamentos", path: "/payment" },
       { label: "Histórico", path: "/history" },
+      { label: "Suporte", path: "/support" },
     ];
   };
 
@@ -82,7 +87,9 @@ export default function Header() {
 
             <div className="hidden sm:block">
               <div className="text-lg font-semibold text-slate-800">Workly</div>
-              <div className="text-xs text-slate-500">{roleLabel}</div>
+              <div className="text-xs text-slate-500">
+                {roleLabel} • Plano {user.plan?.name}
+              </div>
             </div>
           </div>
 
@@ -125,7 +132,10 @@ export default function Header() {
 
             {/* Notificações */}
             <div className="relative">
-              <button className="p-2 rounded-md hover:bg-gray-100">
+              <button
+                onClick={() => setShowNotifications((s) => !s)}
+                className="relative p-2 rounded-md hover:bg-gray-100"
+              >
                 <svg
                   className="w-5 h-5 text-gray-600"
                   viewBox="0 0 24 24"
@@ -136,8 +146,72 @@ export default function Header() {
                   <path d="M18 8a6 6 0 10-12 0v4l-2 2h16l-2-2V8" />
                   <path d="M13.73 21a2 2 0 01-3.46 0" />
                 </svg>
+
+                {unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 text-xs flex items-center justify-center rounded-full bg-rose-500 text-white ring-2 ring-white">
+                    {unreadCount}
+                  </span>
+                )}
               </button>
-              <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-rose-500 ring-2 ring-white"></span>
+
+              {showNotifications && (
+                <div className="absolute right-0 mt-2 w-80 bg-white border rounded-lg shadow-lg z-50 overflow-hidden">
+                  <div className="flex items-center justify-between px-4 py-2 border-b">
+                    <span className="text-sm font-semibold">Notificações</span>
+
+                    {unreadCount > 0 && (
+                      <button
+                        onClick={markAll}
+                        className="text-xs text-blue-600 hover:underline"
+                      >
+                        Marcar todas como lidas
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="max-h-80 overflow-y-auto">
+                    {notifications.length === 0 ? (
+                      <div className="px-4 py-6 text-sm text-gray-500 text-center">
+                        Nenhuma notificação
+                      </div>
+                    ) : (
+                      notifications.map((n) => (
+                        <div
+                          key={n.id}
+                          className={`flex items-start gap-2 px-4 py-3 text-sm border-b last:border-b-0 hover:bg-gray-50 ${
+                            !n.read ? "bg-blue-50" : ""
+                          }`}
+                        >
+                          {/* Conteúdo da notificação */}
+                          <button
+                            onClick={() => markRead(n.id)}
+                            className="flex-1 text-left"
+                          >
+                            <div className="font-medium text-slate-800">
+                              {n.title || "Notificação"}
+                            </div>
+                            <div className="text-xs text-gray-500">
+                              {n.message}
+                            </div>
+                            <div className="text-xs text-gray-400 mt-1">
+                              {timeAgo(n.createdAt)}
+                            </div>
+                          </button>
+
+                          {/* Excluir */}
+                          <button
+                            onClick={() => remove(n.id)}
+                            className="p-1 text-gray-400 hover:text-rose-500"
+                            title="Excluir notificação"
+                          >
+                            🗑
+                          </button>
+                        </div>
+                      ))
+                    )}
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* Usuário */}
@@ -154,14 +228,16 @@ export default function Header() {
                   <div className="text-sm font-medium text-slate-800">
                     {user.name}
                   </div>
-                  <div className="text-xs text-slate-500">{roleLabel}</div>
+                  <div className="text-xs text-slate-500">
+                    {roleLabel} • Plano {user.plan?.name}
+                  </div>
                 </div>
               </button>
 
               {showUserMenu && (
                 <div className="absolute right-0 mt-2 w-48 bg-white border rounded-md shadow-lg py-1 z-50">
                   <button
-                    onClick={() => navigate("/profile")}
+                    onClick={() => navigate("/member-profile")}
                     className="w-full text-left px-4 py-2 text-sm hover:bg-gray-50"
                   >
                     Perfil

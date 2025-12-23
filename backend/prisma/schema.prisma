@@ -11,11 +11,14 @@ model User {
   id        Int      @id @default(autoincrement())
   name      String
   email     String   @unique
-  phone     String
+  phone     String?
   password  String
   role      Role     @default(MEMBER)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  planId Int?
+  plan   Plan? @relation(fields: [planId], references: [id])
 
   workspaces          Workspace[]
   tasks               Task[]
@@ -23,6 +26,8 @@ model User {
   notifications       Notification[]
   passwordResetTokens PasswordResetToken[]
 }
+
+
 
 model PasswordResetToken {
   id        Int      @id @default(autoincrement())
@@ -40,6 +45,17 @@ enum Role {
   ADMIN
   SUPPORT
 }
+
+model Plan {
+  id           Int      @id @default(autoincrement())
+  name         String   @unique
+  price        Float
+  monthlyHours Int
+  createdAt    DateTime @default(now())
+
+  users User[]
+}
+
 
 model Workspace {
   id        Int      @id @default(autoincrement())
@@ -126,11 +142,14 @@ model Notification {
   type      String   @default("INFO")
   read      Boolean  @default(false)
 
+  deletedAt DateTime?
+
   userId    Int
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 }
+
 
 enum TaskStatus {
   TODO
