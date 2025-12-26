@@ -2,13 +2,57 @@ import { Card } from "../ui/Card";
 import { Badge } from "../ui/Badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/Tabs";
 import { Clock, MessageSquare, FileText } from "lucide-react";
+import {
+  SUPPORT_STATUS,
+  SUPPORT_PRIORITY,
+} from "../../constants/support.constants";
 
-export default function TicketList({ tickets, selectedTicket, onSelect }) {
+function formatDate(date) {
+  if (!date) return "—";
+  return new Date(date).toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
+export default function TicketList({
+  tickets = [],
+  selectedTicketId,
+  onSelect,
+}) {
   const openTickets = tickets.filter(
-    (t) => t.status === "open" || t.status === "progress"
+    (t) =>
+      t.status === SUPPORT_STATUS.OPEN || t.status === SUPPORT_STATUS.PROGRESS
   );
 
-  const resolvedTickets = tickets.filter((t) => t.status === "resolved");
+  const resolvedTickets = tickets.filter(
+    (t) => t.status === SUPPORT_STATUS.RESOLVED
+  );
+
+  const renderPriorityBadge = (priority) => {
+    switch (priority) {
+      case SUPPORT_PRIORITY.HIGH:
+        return <Badge className="bg-red-100 text-red-700">Alta</Badge>;
+      case SUPPORT_PRIORITY.MEDIUM:
+        return <Badge className="bg-yellow-100 text-yellow-700">Média</Badge>;
+      default:
+        return <Badge className="bg-gray-100 text-gray-700">Baixa</Badge>;
+    }
+  };
+
+  const renderStatusBadge = (status) => {
+    switch (status) {
+      case SUPPORT_STATUS.OPEN:
+        return <Badge variant="ticketOpen">Aberto</Badge>;
+      case SUPPORT_STATUS.PROGRESS:
+        return <Badge variant="ticketProgress">Em andamento</Badge>;
+      default:
+        return <Badge variant="ticketResolved">Resolvido</Badge>;
+    }
+  };
 
   const renderList = (list) => {
     if (list.length === 0) {
@@ -22,78 +66,53 @@ export default function TicketList({ tickets, selectedTicket, onSelect }) {
 
     return (
       <div className="space-y-4">
-        {list.map((ticket, index) => (
+        {list.map((ticket) => (
           <Card
             key={ticket.id}
-            onClick={() => onSelect(index)}
+            onClick={() => onSelect(ticket.id)}
             className={`p-5 bg-white border-gray-200 cursor-pointer transition-all hover:shadow-md ${
-              selectedTicket === index ? "ring-2 ring-blue-500" : ""
+              selectedTicketId === ticket.id ? "ring-2 ring-blue-500" : ""
             }`}
           >
             <div className="flex items-start justify-between gap-3">
               <div className="flex-1">
+                {/* Cabeçalho */}
                 <div className="flex items-center gap-2 mb-2">
-                  <Badge
-                    className={
-                      ticket.priority === "high"
-                        ? "bg-red-100 text-red-700"
-                        : ticket.priority === "medium"
-                        ? "bg-yellow-100 text-yellow-700"
-                        : "bg-gray-100 text-gray-700"
-                    }
-                  >
-                    {ticket.priority === "high"
-                      ? "Alta"
-                      : ticket.priority === "medium"
-                      ? "Média"
-                      : "Baixa"}
-                  </Badge>
+                  {renderPriorityBadge(ticket.priority)}
 
-                  <span className="text-xs text-gray-500">{ticket.id}</span>
-
+                  <span className="text-xs text-gray-500">#{ticket.id}</span>
                   <span className="text-xs text-gray-400">•</span>
-
                   <span className="text-xs text-gray-500">
                     {ticket.category}
                   </span>
                 </div>
 
+                {/* Título */}
                 <h4 className="text-sm font-medium text-gray-900 mb-1">
                   {ticket.title}
                 </h4>
 
+                {/* Descrição */}
                 <p className="text-xs text-gray-600 line-clamp-2 mb-3">
                   {ticket.description}
                 </p>
 
+                {/* Rodapé */}
                 <div className="flex items-center gap-4 text-xs text-gray-500">
                   <span className="flex items-center gap-1">
                     <Clock className="w-3 h-3" />
-                    {ticket.updatedAt}
+                    {formatDate(ticket.updatedAt)}
                   </span>
 
                   <span className="flex items-center gap-1">
                     <MessageSquare className="w-3 h-3" />
-                    {ticket.responses.length}
+                    {ticket.messages?.length ?? 0}
                   </span>
                 </div>
               </div>
 
-              <Badge
-                className={
-                  ticket.status === "open"
-                    ? "bg-blue-100 text-blue-700"
-                    : ticket.status === "progress"
-                    ? "bg-purple-100 text-purple-700"
-                    : "bg-green-100 text-green-700"
-                }
-              >
-                {ticket.status === "open"
-                  ? "Aberto"
-                  : ticket.status === "progress"
-                  ? "Em andamento"
-                  : "Resolvido"}
-              </Badge>
+              {/* Status */}
+              {renderStatusBadge(ticket.status)}
             </div>
           </Card>
         ))}
@@ -118,6 +137,7 @@ export default function TicketList({ tickets, selectedTicket, onSelect }) {
           >
             Abertos
           </TabsTrigger>
+
           <TabsTrigger
             value="resolved"
             className="rounded-lg text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm"
@@ -127,9 +147,7 @@ export default function TicketList({ tickets, selectedTicket, onSelect }) {
         </TabsList>
 
         <TabsContent value="all">{renderList(tickets)}</TabsContent>
-
         <TabsContent value="open">{renderList(openTickets)}</TabsContent>
-
         <TabsContent value="resolved">
           {renderList(resolvedTickets)}
         </TabsContent>

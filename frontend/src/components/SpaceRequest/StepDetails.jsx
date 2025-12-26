@@ -36,10 +36,11 @@ export default function StepDetails({
       <div className="grid grid-cols-1 md:grid-cols-2 gap-[20px] mb-[24px]">
         <div>
           <label className="block text-[14px] font-[500] text-[#374151] mb-[6px]">
-            Área Total (m²)
+            Área Total (m²) <span className="text-[#dc2626]">*</span>
           </label>
           <input
             type="number"
+            min="1"
             value={formData.totalArea}
             onChange={(e) => onChange("totalArea", e.target.value)}
             className={`${baseInput} ${errors.totalArea ? error : normal}`}
@@ -53,10 +54,11 @@ export default function StepDetails({
 
         <div>
           <label className="block text-[14px] font-[500] text-[#374151] mb-[6px]">
-            Capacidade (pessoas)
+            Capacidade (pessoas) <span className="text-[#dc2626]">*</span>
           </label>
           <input
             type="number"
+            min="1"
             value={formData.capacity}
             onChange={(e) => onChange("capacity", e.target.value)}
             className={`${baseInput} ${errors.capacity ? error : normal}`}
@@ -69,12 +71,14 @@ export default function StepDetails({
         </div>
       </div>
 
+      {/* Salas */}
       <div className="mb-[32px]">
         <label className="block text-[14px] font-[500] text-[#374151] mb-[6px]">
-          Número de Salas / Ambientes
+          Número de Salas / Ambientes <span className="text-[#dc2626]">*</span>
         </label>
         <input
           type="number"
+          min="1"
           value={formData.rooms}
           onChange={(e) => onChange("rooms", e.target.value)}
           className={`${baseInput} ${errors.rooms ? error : normal}`}
@@ -87,19 +91,25 @@ export default function StepDetails({
       {/* Comodidades */}
       <div className="mb-[40px]">
         <h3 className="text-[18px] font-[600] text-[#111827] mb-[6px]">
-          Comodidades Disponíveis
+          Comodidades Disponíveis <span className="text-[#dc2626]">*</span>
         </h3>
         <p className="text-[14px] text-[#6b7280] mb-[16px]">
           Selecione todas as comodidades que o espaço oferece
         </p>
 
         <AmenitiesGrid selected={selectedAmenities} toggle={toggleAmenity} />
+
+        {errors.amenities && (
+          <p className="mt-[8px] text-[13px] text-[#dc2626]">
+            {errors.amenities}
+          </p>
+        )}
       </div>
 
       {/* Upload de imagens */}
       <div className="mb-[40px]">
         <h3 className="text-[18px] font-[600] text-[#111827] mb-[12px]">
-          Fotos do Espaço
+          Fotos do Espaço <span className="text-[#dc2626]">*</span>
         </h3>
 
         <ImageUploader
@@ -107,6 +117,10 @@ export default function StepDetails({
           addImage={addImage}
           removeImage={removeImage}
         />
+
+        {errors.images && (
+          <p className="mt-[8px] text-[13px] text-[#dc2626]">{errors.images}</p>
+        )}
       </div>
 
       {/* Preços */}
@@ -118,10 +132,11 @@ export default function StepDetails({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-[20px] mb-[20px]">
           <div>
             <label className="block text-[14px] font-[500] text-[#374151] mb-[6px]">
-              Preço por Hora (R$)
+              Preço por Hora (R$) <span className="text-[#dc2626]">*</span>
             </label>
             <input
               type="number"
+              min="1"
               value={formData.pricePerHour}
               onChange={(e) => onChange("pricePerHour", e.target.value)}
               className={`${baseInput} ${errors.pricePerHour ? error : normal}`}
@@ -135,10 +150,11 @@ export default function StepDetails({
 
           <div>
             <label className="block text-[14px] font-[500] text-[#374151] mb-[6px]">
-              Preço por Dia (R$)
+              Preço por Dia (R$) <span className="text-[#dc2626]">*</span>
             </label>
             <input
               type="number"
+              min="1"
               value={formData.pricePerDay}
               onChange={(e) => onChange("pricePerDay", e.target.value)}
               className={`${baseInput} ${errors.pricePerDay ? error : normal}`}
@@ -154,10 +170,11 @@ export default function StepDetails({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-[20px] mb-[20px]">
           <div>
             <label className="block text-[14px] font-[500] text-[#374151] mb-[6px]">
-              Preço Mensal (R$)
+              Preço Mensal (R$) <span className="text-[#dc2626]">*</span>
             </label>
             <input
               type="number"
+              min="1"
               value={formData.pricePerMonth}
               onChange={(e) => onChange("pricePerMonth", e.target.value)}
               className={`${baseInput} ${
@@ -173,10 +190,11 @@ export default function StepDetails({
 
           <div>
             <label className="block text-[14px] font-[500] text-[#374151] mb-[6px]">
-              Reserva Mínima (horas)
+              Reserva Mínima (horas) <span className="text-[#dc2626]">*</span>
             </label>
             <input
               type="number"
+              min="1"
               value={formData.minimumBooking}
               onChange={(e) => onChange("minimumBooking", e.target.value)}
               className={`${baseInput} ${
@@ -191,6 +209,7 @@ export default function StepDetails({
           </div>
         </div>
 
+        {/* Informações adicionais (restaurado) */}
         <div>
           <label className="block text-[14px] font-[500] text-[#374151] mb-[6px]">
             Informações Adicionais
@@ -200,6 +219,7 @@ export default function StepDetails({
             value={formData.additionalInfo}
             onChange={(e) => onChange("additionalInfo", e.target.value)}
             className={`${baseInput} ${errors.additionalInfo ? error : normal}`}
+            placeholder="Ex: regras do espaço, horários especiais, observações importantes..."
           />
           {errors.additionalInfo && (
             <p className="mt-[6px] text-[13px] text-[#dc2626]">

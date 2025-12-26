@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Header from "../components/Header";
@@ -8,78 +8,89 @@ import TicketList from "../components/support/TicketList";
 import TicketDetails from "../components/support/TicketDetails";
 import NewTicketDialog from "../components/support/NewTicketDialog";
 
-import { supportTickets } from "../mocks/supportTickets";
+import { useAuth } from "../hooks/useAuth";
+import { useSupportTickets } from "../hooks/useSupportTickets";
+import { useSupportTicket } from "../hooks/useSupportTicket";
+import { useCreateSupportTicket } from "../hooks/useCreateSupportTicket";
+import { useSupportMetrics } from "../hooks/useSupportMetrics";
 
 import { Card } from "../components/ui/Card";
 import { Button } from "../components/ui/Button";
 import { FileText, AlertCircle, CheckCircle, Clock, Plus } from "lucide-react";
 
+import { SUPPORT_STATUS } from "../constants/support.constants";
+
 export default function MemberSupport({ onLogout }) {
   const navigate = useNavigate();
-
-  const [tickets, setTickets] = useState(supportTickets);
-  const [selectedTicketIndex, setSelectedTicketIndex] = useState(null);
+  const { user } = useAuth();
+  const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [newMessage, setNewMessage] = useState("");
 
-  const selectedTicket =
-    selectedTicketIndex !== null ? tickets[selectedTicketIndex] : null;
+  /* ======================
+     HOOKS
+  ====================== */
+  const { tickets, loading: loadingTickets, reload } = useSupportTickets();
+  const { averageResolutionTime, loading: loadingMetrics } =
+    useSupportMetrics();
+
+  const {
+    ticket: selectedTicket,
+    loading: loadingTicket,
+    sendMessage,
+  } = useSupportTicket(selectedTicketId);
+
+  const { submitTicket, loading: creatingTicket } = useCreateSupportTicket();
+
+  /* ======================
+     EFFECTS
+  ====================== */
+  // limpa mensagem ao trocar de chamado
+  useEffect(() => {
+    setNewMessage("");
+  }, [selectedTicketId]);
 
   /* ======================
      MÉTRICAS
   ====================== */
   const openTickets = tickets.filter(
-    (t) => t.status === "open" || t.status === "progress"
+    (t) =>
+      t.status === SUPPORT_STATUS.OPEN || t.status === SUPPORT_STATUS.PROGRESS
   );
 
-  const resolvedTickets = tickets.filter((t) => t.status === "resolved");
+  const resolvedTickets = tickets.filter(
+    (t) => t.status === SUPPORT_STATUS.RESOLVED
+  );
 
   /* ======================
      HANDLERS
   ====================== */
-  const handleSendReply = () => {
-    if (!newMessage.trim() || selectedTicketIndex === null) return;
+  async function handleSendReply() {
+    if (!newMessage.trim() || !selectedTicketId) return;
 
-    const updatedTickets = [...tickets];
-
-    updatedTickets[selectedTicketIndex].responses.push({
-      author: "João Silva",
-      role: "Você",
-      message: newMessage,
-      time: "Agora",
-      isSupport: false,
-    });
-
-    updatedTickets[selectedTicketIndex].status = "progress";
-    updatedTickets[selectedTicketIndex].updatedAt = "Agora";
-
-    setTickets(updatedTickets);
+    await sendMessage(newMessage);
     setNewMessage("");
-  };
+  }
 
-  const handleCreateTicket = (data) => {
-    const newTicket = {
-      id: `#${Math.floor(1000 + Math.random() * 9000)}`,
-      title: data.title,
-      category: data.category,
-      priority: data.priority,
-      status: "open",
-      createdAt: "Agora",
-      updatedAt: "Agora",
-      description: data.description,
-      responses: [
-        {
-          author: "João Silva",
-          role: "Você",
-          message: data.description,
-          time: "Agora",
-          isSupport: false,
-        },
-      ],
-    };
+  async function handleCreateTicket(data) {
+    const created = await submitTicket(data);
 
-    setTickets([newTicket, ...tickets]);
-    setSelectedTicketIndex(0);
-  };
+    // evita race condition
+    setSelectedTicketId(created.id);
+    await reload();
+  }
+
+  function formatMinutes(minutes) {
+    if (!minutes || minutes <= 0) return "—";
+
+    if (minutes < 60) {
+      return `${minutes} min`;
+    }
+
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+
+    return remainingMinutes ? `${hours}h ${remainingMinutes}min` : `${hours}h`;
+  }
 
   /* ======================
      RENDER
@@ -107,6 +118,7 @@ export default function MemberSupport({ onLogout }) {
 
               <NewTicketDialog
                 onSubmit={handleCreateTicket}
+                loading={creatingTicket}
                 trigger={
                   <Button className="bg-white text-blue-600 hover:bg-blue-50">
                     <Plus className="w-4 h-4 mr-2" />
@@ -158,7 +170,10 @@ export default function MemberSupport({ onLogout }) {
                   <Clock className="w-5 h-5 text-orange-600" />
                 </div>
               </div>
-              <h3 className="text-xl font-semibold">4h</h3>
+
+              <h3 className="text-xl font-semibold">
+                {loadingMetrics ? "—" : formatMinutes(averageResolutionTime)}
+              </h3>
             </Card>
           </div>
 
@@ -168,19 +183,21 @@ export default function MemberSupport({ onLogout }) {
             <div className="lg:col-span-1">
               <TicketList
                 tickets={tickets}
-                selectedTicket={selectedTicketIndex}
-                onSelect={setSelectedTicketIndex}
+                selectedTicketId={selectedTicketId}
+                onSelect={setSelectedTicketId}
+                loading={loadingTickets}
               />
             </div>
 
             {/* DETALHES */}
             <div className="lg:col-span-2">
               <TicketDetails
-                ticket={selectedTicket}
+                ticket={loadingTicket ? null : selectedTicket}
                 newMessage={newMessage}
                 onChange={setNewMessage}
                 onSend={handleSendReply}
                 onCreateTicket={handleCreateTicket}
+                currentUser={user}
               />
             </div>
           </div>

@@ -1,6 +1,6 @@
 const router = require("express").Router();
 const { verifyToken } = require("../middlewares/authMiddleware");
-const dashboardController = require("../controllers/dashboardController");
+const dashboardController = require("../controllers/dashboard.Controller");
 
 router.use(verifyToken);
 

@@ -1,8 +1,8 @@
 const router = require("express").Router();
-const { verifyToken, requireRole } = require("../middlewares/authMiddleware");
-const workspaceController = require("../controllers/workspaceController");
+const controller = require("../controllers/workspace.Controller");
 
-router.post("/", verifyToken, workspaceController.createWorkspace);
-router.get("/", verifyToken, workspaceController.listWorkspaces);
+// Público: listar e ver detalhes de espaços
+router.get("/", controller.list);
+router.get("/:id", controller.getById);
 
 module.exports = router;

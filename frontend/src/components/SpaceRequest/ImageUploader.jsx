@@ -1,21 +1,28 @@
 import { Button } from "../ui/Button";
 import { Upload, X } from "lucide-react";
-import { useRef } from "react";
+import { useRef, useState, useEffect } from "react";
 
 export default function ImageUploader({ images, addImage, removeImage }) {
   const fileInputRef = useRef(null);
+  const [previews, setPreviews] = useState([]);
 
   const handleFileChange = (e) => {
     const files = Array.from(e.target.files);
-    files.forEach((file) => {
-      const previewUrl = URL.createObjectURL(file);
-      addImage(previewUrl);
-    });
+    files.forEach((file) => addImage(file)); // salva o File real
+    e.target.value = "";
   };
+
+  // gera previews das imagens
+  useEffect(() => {
+    const urls = images.map((file) => URL.createObjectURL(file));
+    setPreviews(urls);
+
+    // libera memória ao desmontar ou trocar imagens
+    return () => urls.forEach((url) => URL.revokeObjectURL(url));
+  }, [images]);
 
   return (
     <div>
-      {/* input real escondido */}
       <input
         type="file"
         accept="image/*"
@@ -36,13 +43,13 @@ export default function ImageUploader({ images, addImage, removeImage }) {
 
       {images.length > 0 && (
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-          {images.map((img, idx) => (
+          {images.map((file, idx) => (
             <div
               key={idx}
               className="relative rounded-xl overflow-hidden border border-gray-200 bg-gray-50 group"
             >
               <img
-                src={img}
+                src={previews[idx]}
                 alt={`preview-${idx}`}
                 className="w-full h-32 object-cover transition-transform group-hover:scale-105"
               />

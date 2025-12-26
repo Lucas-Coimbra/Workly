@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useCreateSpaceRequest } from "../hooks/spaceRequest/useCreateSpaceRequest";
+
 import StepIndicator from "../components/SpaceRequest/StepIndicator";
 import StepOwner from "../components/SpaceRequest/StepOwner";
 import StepSpace from "../components/SpaceRequest/StepSpace";
@@ -11,9 +13,9 @@ import { useNavigate } from "react-router-dom";
 
 export default function SpaceRequest() {
   const navigate = useNavigate();
+  const { submit, loading, error, success } = useCreateSpaceRequest();
 
   const [currentStep, setCurrentStep] = useState(1);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
 
   const [selectedAmenities, setSelectedAmenities] = useState([]);
   const [uploadedImages, setUploadedImages] = useState([]);
@@ -75,6 +77,28 @@ export default function SpaceRequest() {
     setUploadedImages((prev) => prev.filter((_, i) => i !== index));
   };
 
+  const handleZipCodeChange = async (value) => {
+    const zip = value.replace(/\D/g, "");
+
+    handleInputChange("zipCode", value);
+
+    if (zip.length !== 8) return;
+
+    try {
+      const response = await fetch(`https://viacep.com.br/ws/${zip}/json/`);
+      const data = await response.json();
+
+      if (data.erro) return;
+
+      handleInputChange("street", data.logradouro || "");
+      handleInputChange("neighborhood", data.bairro || "");
+      handleInputChange("city", data.localidade || "");
+      handleInputChange("state", data.uf || "");
+    } catch (e) {
+      console.error("Erro ao buscar CEP", e);
+    }
+  };
+
   /* =========================
      VALIDAÇÃO POR STEP
   ========================== */
@@ -90,16 +114,69 @@ export default function SpaceRequest() {
     }
 
     if (step === 2) {
-      if (!formData.spaceName) newErrors.spaceName = true;
-      if (!formData.spaceType) newErrors.spaceType = true;
-      if (!formData.spaceDescription) newErrors.spaceDescription = true;
+      if (!formData.spaceName) newErrors.spaceName = "Informe o nome do espaço";
+
+      if (!formData.spaceType)
+        newErrors.spaceType = "Selecione o tipo de espaço";
+
+      if (!formData.spaceDescription)
+        newErrors.spaceDescription = "Informe a descrição";
+
+      // ENDEREÇO (obrigatório)
+      if (!formData.zipCode) newErrors.zipCode = "Informe o CEP";
+
+      if (!formData.street) newErrors.street = "Informe a rua ou avenida";
+
+      if (!formData.number) newErrors.number = "Informe o número";
+
+      if (!formData.neighborhood) newErrors.neighborhood = "Informe o bairro";
+
+      if (!formData.city) newErrors.city = "Informe a cidade";
+
+      if (!formData.state) newErrors.state = "Selecione o estado";
     }
 
     if (step === 3) {
-      if (!formData.totalArea) newErrors.totalArea = true;
-      if (!formData.capacity) newErrors.capacity = true;
-      if (uploadedImages.length === 0) newErrors.images = true;
-      if (selectedAmenities.length === 0) newErrors.amenities = true;
+      // Métricas obrigatórias
+      if (!formData.totalArea || Number(formData.totalArea) <= 0) {
+        newErrors.totalArea = "Informe a área total";
+      }
+
+      if (!formData.capacity || Number(formData.capacity) <= 0) {
+        newErrors.capacity = "Informe a capacidade";
+      }
+
+      if (!formData.rooms || Number(formData.rooms) < 1) {
+        newErrors.rooms = "Informe ao menos 1 sala ou ambiente";
+      }
+
+      // Comodidades (mínimo 1)
+      if (selectedAmenities.length === 0) {
+        newErrors.amenities = "Selecione ao menos uma comodidade";
+      }
+
+      // Imagens (mínimo 1)
+      if (uploadedImages.length === 0) {
+        newErrors.images = "Adicione ao menos uma foto do espaço";
+      }
+
+      // Preços (todos obrigatórios e >= 1)
+      if (!formData.pricePerHour || Number(formData.pricePerHour) < 1) {
+        newErrors.pricePerHour = "Informe o preço por hora";
+      }
+
+      if (!formData.pricePerDay || Number(formData.pricePerDay) < 1) {
+        newErrors.pricePerDay = "Informe o preço por dia";
+      }
+
+      if (!formData.pricePerMonth || Number(formData.pricePerMonth) < 1) {
+        newErrors.pricePerMonth = "Informe o preço mensal";
+      }
+
+      if (!formData.minimumBooking || Number(formData.minimumBooking) < 1) {
+        newErrors.minimumBooking =
+          "Reserva mínima deve ser de pelo menos 1 hora";
+      }
     }
 
     if (step === 4) {
@@ -128,20 +205,44 @@ export default function SpaceRequest() {
      SUBMIT FINAL
   ========================== */
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateStep(4)) return;
 
-    console.log("formData", formData);
-    console.log("amenities", selectedAmenities);
-    console.log("images", uploadedImages);
+    const formPayload = new FormData();
 
-    setShowSuccessModal(true);
-  };
+    // campos numéricos que o backend espera
+    const numericFields = [
+      "totalArea",
+      "capacity",
+      "rooms",
+      "pricePerHour",
+      "pricePerDay",
+      "pricePerMonth",
+      "minimumBooking",
+    ];
 
-  const handleSuccessClose = () => {
-    setShowSuccessModal(false);
-    navigate("/");
+    Object.entries(formData).forEach(([key, value]) => {
+      if (numericFields.includes(key)) {
+        formPayload.append(key, value ? Number(value) : ""); // converte para number
+      } else {
+        formPayload.append(key, value);
+      }
+    });
+
+    // comodidades
+    selectedAmenities.forEach((amenity) =>
+      formPayload.append("amenities", amenity)
+    );
+
+    // imagens (arquivos reais)
+    uploadedImages.forEach((file) => formPayload.append("images", file));
+
+    try {
+      await submit(formPayload); // envia FormData para o backend
+    } catch {
+      // erro tratado no hook
+    }
   };
 
   /* =========================
@@ -224,6 +325,7 @@ export default function SpaceRequest() {
                 <StepSpace
                   formData={formData}
                   onChange={handleInputChange}
+                  onZipCodeChange={handleZipCodeChange}
                   errors={errors}
                 />
               )}
@@ -256,15 +358,30 @@ export default function SpaceRequest() {
               onPrev={prevStep}
               onNext={nextStep}
               onSubmit={handleSubmit}
+              agreedToTerms={agreedToTerms && !loading}
             />
           </form>
+
+          {error && (
+            <div className="mt-6 p-4 rounded-lg bg-red-50 border border-red-200 text-red-700 text-sm">
+              {typeof error === "string"
+                ? error
+                : error.message || "Erro ao enviar solicitação"}
+            </div>
+          )}
+
+          {loading && (
+            <p className="mt-4 text-sm text-gray-500">
+              Enviando solicitação...
+            </p>
+          )}
         </div>
       </main>
 
       <WhyWorkly />
 
       {/* SUCCESS MODAL */}
-      {showSuccessModal && (
+      {success && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
           <div className="bg-white rounded-[12px] max-w-md w-full p-[32px] text-center">
             <CheckCircle size={64} className="text-[#059669] mx-auto" />
@@ -275,7 +392,7 @@ export default function SpaceRequest() {
               Você receberá um e-mail em <strong>{formData.ownerEmail}</strong>.
             </p>
             <button
-              onClick={handleSuccessClose}
+              onClick={() => navigate("/")}
               className="mt-[20px] w-full bg-[#059669] hover:bg-[#047857] text-white rounded-[8px] py-[12px]"
             >
               Voltar para Home

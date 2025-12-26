@@ -7,6 +7,47 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+/**
+ * ======================
+ * ENUMS
+ * ======================
+ */
+
+enum Role {
+  MEMBER
+  ADMIN
+  SUPPORT
+}
+
+enum SpaceRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum OwnerType {
+  individual
+  company
+}
+
+enum SupportTicketStatus {
+  open
+  progress
+  resolved
+}
+
+enum SupportPriority {
+  low
+  medium
+  high
+}
+
+/**
+ * ======================
+ * MODELS
+ * ======================
+ */
+
 model User {
   id        Int      @id @default(autoincrement())
   name      String
@@ -20,14 +61,14 @@ model User {
   planId Int?
   plan   Plan? @relation(fields: [planId], references: [id])
 
-  workspaces          Workspace[]
-  tasks               Task[]
   reservations        Reservation[]
   notifications       Notification[]
   passwordResetTokens PasswordResetToken[]
+  supportTickets      SupportTicket[]
+  supportMessages     SupportMessage[]
+
+  reviewedSpaceRequests SpaceRequest[] @relation("ReviewedByAdmin")
 }
-
-
 
 model PasswordResetToken {
   id        Int      @id @default(autoincrement())
@@ -40,12 +81,6 @@ model PasswordResetToken {
   user User @relation(fields: [userId], references: [id])
 }
 
-enum Role {
-  MEMBER
-  ADMIN
-  SUPPORT
-}
-
 model Plan {
   id           Int      @id @default(autoincrement())
   name         String   @unique
@@ -56,33 +91,50 @@ model Plan {
   users User[]
 }
 
-
 model Workspace {
-  id        Int      @id @default(autoincrement())
-  name      String
-  ownerId   Int
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  email       String
+  phone       String?
+  address     String
+
+  zipCode      String?
+  street       String?
+  number       String?
+  complement   String?
+  neighborhood String?
+  city         String?
+  state        String?
+
+  totalArea       Int?
+  capacity        Int?
+  totalRooms      Int?
+  pricePerHour    Float?
+  pricePerDay     Float?
+  pricePerMonth   Float?
+  minimumBooking  Int?
+  additionalInfo  String?
+  amenities       String[]
+  images          String[]
+
+  approvedFromRequestId Int? @unique
+  approvedFromRequest   SpaceRequest? @relation("SpaceApproval", fields: [approvedFromRequestId], references: [id])
+
+  rooms Room[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-
-  owner User   @relation(fields: [ownerId], references: [id])
-  rooms Room[]
-  tasks Task[]
 }
 
 model Room {
-  id           Int           @id @default(autoincrement())
-  name         String
-  type         RoomType
-  capacity     Int
-  workspaceId  Int
+  id          Int      @id @default(autoincrement())
+  name        String
+  capacity    Int
+  workspaceId Int
+
   workspace    Workspace     @relation(fields: [workspaceId], references: [id])
   reservations Reservation[]
-}
-
-enum RoomType {
-  SMALL
-  MEDIUM
-  LARGE
 }
 
 model Reservation {
@@ -99,66 +151,93 @@ model Reservation {
   room Room @relation(fields: [roomId], references: [id])
 }
 
-model Task {
-  id          Int        @id @default(autoincrement())
-  title       String
-  description String?
-  status      TaskStatus @default(TODO)
-  priority    Priority   @default(MEDIUM)
-  deadline    DateTime?
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-
-  workspaceId Int
-  workspace   Workspace @relation(fields: [workspaceId], references: [id])
-
-  authorId Int
-  author   User @relation(fields: [authorId], references: [id])
-
-  tags TaskTag[]
-}
-
-model Tag {
-  id        Int       @id @default(autoincrement())
-  name      String    @unique
-  createdAt DateTime  @default(now())
-  tasks     TaskTag[]
-}
-
-model TaskTag {
-  id     Int  @id @default(autoincrement())
-  taskId Int
-  tagId  Int
-  task   Task @relation(fields: [taskId], references: [id])
-  tag    Tag  @relation(fields: [tagId], references: [id])
-
-  @@unique([taskId, tagId])
-}
-
 model Notification {
-  id        Int      @id @default(autoincrement())
+  id        Int       @id @default(autoincrement())
   title     String
   message   String
-  type      String   @default("INFO")
-  read      Boolean  @default(false)
-
+  type      String    @default("INFO")
+  read      Boolean   @default(false)
   deletedAt DateTime?
 
-  userId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
 }
 
+model SupportTicket {
+  id          Int                 @id @default(autoincrement())
+  title       String
+  description String
+  category    String
+  priority    SupportPriority
+  status      SupportTicketStatus @default(open)
 
-enum TaskStatus {
-  TODO
-  IN_PROGRESS
-  DONE
+  userId Int
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  messages SupportMessage[]
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  resolvedAt DateTime?
 }
 
-enum Priority {
-  LOW
-  MEDIUM
-  HIGH
+model SupportMessage {
+  id        Int     @id @default(autoincrement())
+  message   String
+  isSupport Boolean @default(false)
+
+  ticketId Int
+  ticket   SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+
+  authorId Int?
+  author   User? @relation(fields: [authorId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+model SpaceRequest {
+  id Int @id @default(autoincrement())
+
+  ownerType     OwnerType
+  ownerName     String
+  ownerDocument String
+  ownerEmail    String
+  ownerPhone    String
+
+  spaceName        String
+  spaceType        String
+  spaceDescription String
+
+  zipCode      String
+  street       String
+  number       String
+  complement   String?
+  neighborhood String
+  city         String
+  state        String
+
+  totalArea Int?
+  capacity  Int?
+  rooms     Int?
+
+  pricePerHour   Float?
+  pricePerDay    Float?
+  pricePerMonth  Float?
+  minimumBooking Int?
+  additionalInfo String?
+
+  amenities String[]
+  images    String[]
+
+  status SpaceRequestStatus @default(PENDING)
+  
+  approvedWorkspace Workspace? @relation("SpaceApproval")
+
+  reviewedById Int?
+  reviewedBy   User? @relation("ReviewedByAdmin", fields: [reviewedById], references: [id])
+
+  reviewedAt DateTime?
+  createdAt  DateTime  @default(now())
 }

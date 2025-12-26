@@ -11,29 +11,21 @@ import {
   User,
   Clock,
   Check,
+  ShieldCheck,
+  Lock,
+  Plug,
+  Snowflake,
+  Sun,
+  Accessibility,
+  Camera,
 } from "lucide-react";
-import { amenitiesList as AMENITIES } from "../../mocks/mockData";
 
-const ICON_MAP = {
-  Wifi,
-  Coffee,
-  Car,
-  Printer,
-  Monitor,
-  Phone,
-  Home,
-  Users,
-  Square,
-  User,
-  Clock,
-};
-
-export default function AmenitiesGrid({ selected, toggle }) {
+function AmenitiesGrid({ selected, toggle }) {
   return (
     <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-      {AMENITIES.map((a) => {
+      {AmenitiesGrid.AMENITIES.map((a) => {
         const active = selected.includes(a.id);
-        const Icon = ICON_MAP[a.icon] || Wifi;
+        const Icon = a.icon;
 
         return (
           <button
@@ -67,3 +59,31 @@ export default function AmenitiesGrid({ selected, toggle }) {
     </div>
   );
 }
+
+/* propriedade estática */
+AmenitiesGrid.AMENITIES = [
+  { id: "WIFI", name: "Wi-Fi", icon: Wifi },
+  { id: "COFFEE", name: "Café", icon: Coffee },
+  { id: "PARKING", name: "Estacionamento", icon: Car },
+  { id: "PRINTER", name: "Impressora", icon: Printer },
+  { id: "MONITOR", name: "Monitor Externo", icon: Monitor },
+  { id: "PHONE", name: "Telefone", icon: Phone },
+
+  { id: "MEETING_ROOM", name: "Sala de Reunião", icon: Users },
+  { id: "PRIVATE_ROOM", name: "Sala Privativa", icon: Home },
+  { id: "OPEN_SPACE", name: "Espaço Compartilhado", icon: Square },
+  { id: "INDIVIDUAL_DESK", name: "Mesa Individual", icon: User },
+
+  { id: "FLEX_HOURS", name: "Horário Flexível", icon: Clock },
+  { id: "AIR_CONDITIONING", name: "Ar-condicionado", icon: Snowflake },
+  { id: "NATURAL_LIGHT", name: "Iluminação Natural", icon: Sun },
+
+  { id: "POWER_OUTLETS", name: "Tomadas Individuais", icon: Plug },
+  { id: "SECURITY", name: "Segurança", icon: ShieldCheck },
+  { id: "CAMERAS", name: "Câmeras de Segurança", icon: Camera },
+  { id: "LOCKERS", name: "Armários", icon: Lock },
+
+  { id: "ACCESSIBILITY", name: "Acessibilidade", icon: Accessibility },
+];
+
+export default AmenitiesGrid;

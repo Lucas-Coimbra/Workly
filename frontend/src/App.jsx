@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthProvider";
-
+import ScrollToTop from "./components/ScrollToTop";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import { Navigate } from "react-router-dom";
 
@@ -25,6 +25,7 @@ import MemberProfile from "./pages/MemberProfile";
 export default function App() {
   return (
     <AuthProvider>
+      <ScrollToTop />
       <Routes>
         {/* públicas */}
         <Route path="/" element={<Home />} />
