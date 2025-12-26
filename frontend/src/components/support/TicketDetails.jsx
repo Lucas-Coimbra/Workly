@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { Card } from "../ui/Card";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
@@ -13,19 +14,43 @@ import {
   Paperclip,
 } from "lucide-react";
 
+import {
+  SUPPORT_STATUS,
+  SUPPORT_PRIORITY,
+} from "../../constants/support.constants";
+
+function formatDate(date) {
+  if (!date) return "—";
+  return new Date(date).toLocaleString("pt-BR", {
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export default function TicketDetails({
   ticket,
   newMessage,
   onChange,
   onSend,
   onCreateTicket,
+  currentUser,
 }) {
+  const fileInputRef = useRef(null);
+
+  /* ======================
+     EMPTY STATE
+  ====================== */
   if (!ticket) {
     return (
       <Card className="p-12 bg-white border-gray-200 shadow-sm h-full flex flex-col items-center justify-center text-center">
         <div className="flex flex-col items-center space-y-3">
           <MessageSquare className="w-16 h-16 text-gray-300 mb-4" />
+
           <h4 className="text-gray-900 mb-2">Selecione um Chamado</h4>
+
           <p className="text-sm text-gray-500 mb-6">
             Escolha um chamado ao lado para ver os detalhes
           </p>
@@ -44,86 +69,104 @@ export default function TicketDetails({
     );
   }
 
+  /* ======================
+     BADGES
+  ====================== */
+  const renderPriorityBadge = (priority) => {
+    switch (priority) {
+      case SUPPORT_PRIORITY.HIGH:
+        return (
+          <Badge className="bg-red-100 text-red-700">Alta Prioridade</Badge>
+        );
+      case SUPPORT_PRIORITY.MEDIUM:
+        return (
+          <Badge className="bg-yellow-100 text-yellow-700">
+            Média Prioridade
+          </Badge>
+        );
+      default:
+        return (
+          <Badge className="bg-gray-100 text-gray-700">Baixa Prioridade</Badge>
+        );
+    }
+  };
+
+  const renderStatusBadge = (status) => {
+    switch (status) {
+      case SUPPORT_STATUS.OPEN:
+        return <Badge variant="ticketOpen">Aberto</Badge>;
+      case SUPPORT_STATUS.PROGRESS:
+        return <Badge variant="ticketProgress">Em andamento</Badge>;
+      default:
+        return <Badge variant="ticketResolved">Resolvido</Badge>;
+    }
+  };
+
+  /* ======================
+     RENDER
+  ====================== */
   return (
-    <Card className="p-6 bg-white border-gray-200 shadow-sm">
-      {/* Header */}
+    <Card className="p-6 bg-white border-gray-200 shadow-sm h-full flex flex-col">
+      {/* HEADER */}
       <div className="flex items-start justify-between pb-6 mb-6 border-b border-gray-200">
         <div>
           <div className="flex items-center gap-2 mb-3">
-            <Badge
-              className={
-                ticket.priority === "high"
-                  ? "bg-red-100 text-red-700"
-                  : ticket.priority === "medium"
-                  ? "bg-yellow-100 text-yellow-700"
-                  : "bg-gray-100 text-gray-700"
-              }
-            >
-              {ticket.priority === "high"
-                ? "Alta Prioridade"
-                : ticket.priority === "medium"
-                ? "Média Prioridade"
-                : "Baixa Prioridade"}
-            </Badge>
-
-            <Badge variant="outline">{ticket.id}</Badge>
-
+            {renderPriorityBadge(ticket.priority)}
+            <Badge variant="outline">#{ticket.id}</Badge>
             <Badge variant="outline">{ticket.category}</Badge>
           </div>
 
           <h3 className="text-gray-900 mb-1">{ticket.title}</h3>
 
           <div className="flex items-center gap-3 text-sm text-gray-500">
-            <span>Criado em {ticket.createdAt}</span>
+            <span>Criado em {formatDate(ticket.createdAt)}</span>
             <span>•</span>
-            <span>Atualizado {ticket.updatedAt}</span>
+            <span>Atualizado {formatDate(ticket.updatedAt)}</span>
           </div>
         </div>
 
-        <Badge
-          className={
-            ticket.status === "open"
-              ? "bg-blue-100 text-blue-700"
-              : ticket.status === "progress"
-              ? "bg-purple-100 text-purple-700"
-              : "bg-green-100 text-green-700"
-          }
-        >
-          {ticket.status === "open"
-            ? "Aberto"
-            : ticket.status === "progress"
-            ? "Em andamento"
-            : "Resolvido"}
-        </Badge>
+        {renderStatusBadge(ticket.status)}
       </div>
 
-      {/* Conversação */}
-      <div className="mb-6">
+      {/* CONVERSAÇÃO */}
+      <div className="flex-1 mb-6">
         <h4 className="text-gray-900 mb-4">Conversação</h4>
 
         <div className="space-y-4 max-h-[480px] overflow-y-auto pr-2">
-          {ticket.responses.map((response, index) => {
-            const isSupport = response.isSupport;
+          {ticket.messages?.length === 0 && (
+            <p className="text-sm text-gray-500 text-center py-6">
+              Nenhuma mensagem ainda
+            </p>
+          )}
+
+          {ticket.messages?.map((message) => {
+            const isSupport = message.isSupport;
+
+            const senderName = isSupport
+              ? message.senderName || "Suporte"
+              : currentUser?.name || "Você";
+
+            const initials = senderName
+              .split(" ")
+              .map((n) => n[0])
+              .slice(0, 2)
+              .join("")
+              .toUpperCase();
 
             return (
               <div
-                key={index}
+                key={message.id}
                 className={`flex gap-3 ${isSupport ? "" : "flex-row-reverse"}`}
               >
+                {/* AVATAR */}
                 <Avatar
                   className={`w-10 h-10 ${
-                    isSupport ? "bg-blue-100" : "bg-green-100"
+                    isSupport
+                      ? "bg-blue-100 text-blue-700"
+                      : "bg-slate-800 text-white"
                   }`}
                 >
-                  <AvatarFallback
-                    className={isSupport ? "text-blue-700" : "text-green-700"}
-                  >
-                    {response.author
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .slice(0, 2)}
-                  </AvatarFallback>
+                  <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
 
                 <div
@@ -140,27 +183,26 @@ export default function TicketDetails({
                   >
                     <div className="flex items-center gap-2 mb-2">
                       <span className="text-sm text-gray-900">
-                        {response.author}
+                        {senderName}
                       </span>
 
-                      <Badge
-                        variant="outline"
-                        className={`text-xs ${
-                          isSupport
-                            ? "border-blue-200 text-blue-600"
-                            : "border-green-200 text-green-600"
-                        }`}
-                      >
-                        {response.role}
-                      </Badge>
+                      {/* ROLE APENAS PARA SUPORTE */}
+                      {isSupport && (
+                        <Badge
+                          variant="outline"
+                          className="text-xs border-blue-200 text-blue-600"
+                        >
+                          Suporte
+                        </Badge>
+                      )}
                     </div>
 
                     <p className="text-sm text-gray-700 mb-2">
-                      {response.message}
+                      {message.message}
                     </p>
 
                     <span className="text-xs text-gray-500">
-                      {response.time}
+                      {formatDate(message.createdAt)}
                     </span>
                   </div>
                 </div>
@@ -170,8 +212,8 @@ export default function TicketDetails({
         </div>
       </div>
 
-      {/* Responder */}
-      {ticket.status !== "resolved" ? (
+      {/* RESPONDER */}
+      {ticket.status !== SUPPORT_STATUS.RESOLVED ? (
         <div className="pt-6 border-t border-gray-200">
           <Label className="block mb-2">Adicionar Resposta</Label>
 
@@ -183,7 +225,19 @@ export default function TicketDetails({
           />
 
           <div className="flex justify-between items-center mt-3">
-            <Button variant="outline" size="sm" className="border-gray-200">
+            <input
+              ref={fileInputRef}
+              type="file"
+              className="hidden"
+              accept="image/*,application/pdf,.doc,.docx,.xls,.xlsx,.txt"
+            />
+
+            <Button
+              variant="outline"
+              size="sm"
+              className="border-gray-200"
+              onClick={() => fileInputRef.current?.click()}
+            >
               <Paperclip className="w-4 h-4 mr-2" />
               Anexar Arquivo
             </Button>

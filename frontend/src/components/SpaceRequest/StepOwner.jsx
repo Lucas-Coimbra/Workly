@@ -1,25 +1,28 @@
 import { User, FileText, Mail, Phone } from "lucide-react";
+import { NumericFormat } from "react-number-format";
 
 export default function StepOwner({ formData, onChange, errors = {} }) {
+  const isCompany = formData.ownerType === "company";
+
   return (
     <div>
       {/* Título */}
-      <div className="mb-[32px]">
-        <h2 className="text-[24px] font-[700] text-[#111827]">
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-[#111827]">
           Informações do Proprietário
         </h2>
-        <p className="text-[15px] text-[#6b7280] mt-[6px]">
+        <p className="text-sm text-[#6b7280] mt-1">
           Comece nos contando sobre você ou sua empresa
         </p>
       </div>
 
       {/* Tipo de cadastro */}
-      <div className="mb-[32px]">
-        <span className="block text-[14px] font-[500] text-[#374151] mb-[12px]">
-          Tipo de Cadastro <span className="text-[#dc2626]">*</span>
+      <div className="mb-8">
+        <span className="block text-sm font-medium text-[#374151] mb-3">
+          Tipo de Cadastro <span className="text-red-600">*</span>
         </span>
 
-        <div className="flex gap-[16px]">
+        <div className="flex gap-4">
           {[
             { value: "individual", label: "Pessoa Física" },
             { value: "company", label: "Pessoa Jurídica" },
@@ -30,43 +33,41 @@ export default function StepOwner({ formData, onChange, errors = {} }) {
               <label
                 key={option.value}
                 className={`
-                  flex items-center gap-[10px]
-                  px-[16px] py-[12px]
-                  rounded-[10px]
-                  border
-                  cursor-pointer
-                  transition
+                  flex items-center gap-2
+                  px-4 py-3
+                  rounded-lg border cursor-pointer
                   ${
                     checked
-                      ? "border-[#059669] bg-[#ecfdf5]"
-                      : "border-[#e5e7eb] bg-white hover:bg-[#f9fafb]"
+                      ? "border-green-600 bg-green-50"
+                      : "border-gray-300 bg-white hover:bg-gray-50"
                   }
                 `}
               >
-                <span
-                  className={`
-                    w-[18px] h-[18px]
-                    rounded-full
-                    border-[2px]
-                    flex items-center justify-center
-                    ${checked ? "border-[#059669]" : "border-[#9ca3af]"}
-                  `}
-                >
-                  {checked && (
-                    <span className="w-[8px] h-[8px] rounded-full bg-[#059669]" />
-                  )}
-                </span>
-
                 <input
                   type="radio"
                   name="ownerType"
                   value={option.value}
                   checked={checked}
-                  onChange={(e) => onChange("ownerType", e.target.value)}
+                  onChange={(e) => {
+                    onChange("ownerType", e.target.value);
+                    onChange("ownerDocument", "");
+                  }}
                   className="hidden"
                 />
 
-                <span className="text-[14px] font-[500] text-[#111827]">
+                <span
+                  className={`
+                    w-4 h-4 rounded-full border-2
+                    flex items-center justify-center
+                    ${checked ? "border-green-600" : "border-gray-400"}
+                  `}
+                >
+                  {checked && (
+                    <span className="w-2 h-2 rounded-full bg-green-600" />
+                  )}
+                </span>
+
+                <span className="text-sm font-medium text-[#111827]">
                   {option.label}
                 </span>
               </label>
@@ -76,185 +77,130 @@ export default function StepOwner({ formData, onChange, errors = {} }) {
       </div>
 
       {/* Campos */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-[24px]">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Nome */}
         <div>
-          <label className="block text-[14px] font-[500] text-[#374151] mb-[6px]">
-            {formData.ownerType === "company"
-              ? "Nome da Empresa"
-              : "Nome Completo"}{" "}
-            <span className="text-[#dc2626]">*</span>
+          <label className="block text-sm font-medium text-[#374151] mb-1">
+            {isCompany ? "Nome da Empresa" : "Nome Completo"}{" "}
+            <span className="text-red-600">*</span>
           </label>
 
           <div className="relative">
-            <User
-              size={18}
-              className="absolute left-[14px] top-[50%] -translate-y-[50%] text-[#9ca3af]"
-            />
+            <User className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="text"
               value={formData.ownerName}
               onChange={(e) => onChange("ownerName", e.target.value)}
               placeholder="Digite o nome"
               className={`
-                w-full h-[48px]
-                pl-[44px] pr-[14px]
-                rounded-[10px]
-                border
-                text-[14px]
-                text-[#111827]
-                placeholder:text-[#9ca3af]
-                focus:outline-none
-                focus:ring-2
-                transition
-              ${
-                errors.ownerName
-                  ? "border-[#dc2626] focus:border-[#dc2626] focus:ring-[#dc2626]/20"
-                  : "border-[#e5e7eb] focus:border-[#059669] focus:ring-[#059669]/20"
-              }
-            `}
-            />
-
-            {errors.ownerName && (
-              <p className="mt-[6px] text-[13px] text-[#dc2626]">
-                Este campo é obrigatório
-              </p>
-            )}
-          </div>
-        </div>
-
-        {/* Documento */}
-        <div>
-          <label className="block text-[14px] font-[500] text-[#374151] mb-[6px]">
-            {formData.ownerType === "company" ? "CNPJ" : "CPF"}{" "}
-            <span className="text-[#dc2626]">*</span>
-          </label>
-
-          <div className="relative">
-            <FileText
-              size={18}
-              className="absolute left-[14px] top-[50%] -translate-y-[50%] text-[#9ca3af]"
-            />
-            <input
-              type="text"
-              value={formData.ownerDocument}
-              onChange={(e) => onChange("ownerDocument", e.target.value)}
-              placeholder={
-                formData.ownerType === "company"
-                  ? "00.000.000/0000-00"
-                  : "000.000.000-00"
-              }
-              className={`
-                w-full h-[48px]
-                pl-[44px] pr-[14px]
-                rounded-[10px]
-                border
-                text-[14px]
-                text-[#111827]
-                placeholder:text-[#9ca3af]
-                focus:outline-none
-                focus:ring-2
-                transition
+                w-full h-12 pl-10 pr-3 border rounded-lg text-sm
                 ${
-                  errors.ownerDocument
-                    ? "border-[#dc2626] focus:border-[#dc2626] focus:ring-[#dc2626]/20"
-                    : "border-[#e5e7eb] focus:border-[#059669] focus:ring-[#059669]/20"
+                  errors.ownerName
+                    ? "border-red-600"
+                    : "border-gray-300 focus:border-green-600"
                 }
               `}
             />
-
-            {errors.ownerDocument && (
-              <p className="mt-[6px] text-[13px] text-[#dc2626]">
-                Documento obrigatório
-              </p>
-            )}
           </div>
+
+          {errors.ownerName && (
+            <p className="text-xs text-red-600 mt-1">Campo obrigatório</p>
+          )}
         </div>
 
-        {/* Email */}
+        {/* Documento (CPF / CNPJ) */}
         <div>
-          <label className="block text-[14px] font-[500] text-[#374151] mb-[6px]">
-            E-mail <span className="text-[#dc2626]">*</span>
+          <label className="block text-sm font-medium text-[#374151] mb-1">
+            {isCompany ? "CNPJ" : "CPF"} <span className="text-red-600">*</span>
           </label>
 
           <div className="relative">
-            <Mail
-              size={18}
-              className="absolute left-[14px] top-[50%] -translate-y-[50%] text-[#9ca3af]"
+            <FileText className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+
+            <NumericFormat
+              value={formData.ownerDocument}
+              onValueChange={(values) =>
+                onChange("ownerDocument", values.formattedValue)
+              }
+              format={isCompany ? "##.###.###/####-##" : "###.###.###-##"}
+              placeholder={isCompany ? "00.000.000/0000-00" : "000.000.000-00"}
+              className={`
+                w-full h-12 pl-10 pr-3 border rounded-lg text-sm
+                ${
+                  errors.ownerDocument
+                    ? "border-red-600"
+                    : "border-gray-300 focus:border-green-600"
+                }
+              `}
             />
+          </div>
+
+          {errors.ownerDocument && (
+            <p className="text-xs text-red-600 mt-1">Documento obrigatório</p>
+          )}
+        </div>
+
+        {/* E-mail */}
+        <div>
+          <label className="block text-sm font-medium text-[#374151] mb-1">
+            E-mail <span className="text-red-600">*</span>
+          </label>
+
+          <div className="relative">
+            <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
             <input
               type="email"
               value={formData.ownerEmail}
               onChange={(e) => onChange("ownerEmail", e.target.value)}
               placeholder="seuemail@exemplo.com"
               className={`
-                w-full h-[48px]
-                pl-[44px] pr-[14px]
-                rounded-[10px]
-                border
-                text-[14px]
-                text-[#111827]
-                placeholder:text-[#9ca3af]
-                focus:outline-none
-                focus:ring-2
-                transition
+                w-full h-12 pl-10 pr-3 border rounded-lg text-sm
                 ${
                   errors.ownerEmail
-                    ? "border-[#dc2626] focus:border-[#dc2626] focus:ring-[#dc2626]/20"
-                    : "border-[#e5e7eb] focus:border-[#059669] focus:ring-[#059669]/20"
+                    ? "border-red-600"
+                    : "border-gray-300 focus:border-green-600"
                 }
               `}
             />
-
-            {errors.ownerEmail && (
-              <p className="mt-[6px] text-[13px] text-[#dc2626]">
-                Informe um e-mail válido
-              </p>
-            )}
           </div>
+
+          {errors.ownerEmail && (
+            <p className="text-xs text-red-600 mt-1">
+              Informe um e-mail válido
+            </p>
+          )}
         </div>
 
         {/* Telefone */}
         <div>
-          <label className="block text-[14px] font-[500] text-[#374151] mb-[6px]">
-            Telefone <span className="text-[#dc2626]">*</span>
+          <label className="block text-sm font-medium text-[#374151] mb-1">
+            Telefone <span className="text-red-600">*</span>
           </label>
 
           <div className="relative">
-            <Phone
-              size={18}
-              className="absolute left-[14px] top-[50%] -translate-y-[50%] text-[#9ca3af]"
-            />
-            <input
-              type="text"
+            <Phone className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+
+            <NumericFormat
               value={formData.ownerPhone}
-              onChange={(e) => onChange("ownerPhone", e.target.value)}
+              onValueChange={(values) =>
+                onChange("ownerPhone", values.formattedValue)
+              }
+              format="(##) #####-####"
               placeholder="(00) 00000-0000"
               className={`
-                w-full h-[48px]
-                pl-[44px] pr-[14px]
-                rounded-[10px]
-                border
-                text-[14px]
-                text-[#111827]
-                placeholder:text-[#9ca3af]
-                focus:outline-none
-                focus:ring-2
-                transition
+                w-full h-12 pl-10 pr-3 border rounded-lg text-sm
                 ${
                   errors.ownerPhone
-                    ? "border-[#dc2626] focus:border-[#dc2626] focus:ring-[#dc2626]/20"
-                    : "border-[#e5e7eb] focus:border-[#059669] focus:ring-[#059669]/20"
+                    ? "border-red-600"
+                    : "border-gray-300 focus:border-green-600"
                 }
               `}
             />
-
-            {errors.ownerPhone && (
-              <p className="mt-[6px] text-[13px] text-[#dc2626]">
-                Telefone obrigatório
-              </p>
-            )}
           </div>
+
+          {errors.ownerPhone && (
+            <p className="text-xs text-red-600 mt-1">Telefone obrigatório</p>
+          )}
         </div>
       </div>
     </div>

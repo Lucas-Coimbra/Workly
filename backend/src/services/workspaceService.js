@@ -1,11 +1,21 @@
 const prisma = require("../config/prisma");
 
-async function createWorkspace(ownerId, name) {
-  return prisma.workspace.create({ data: { name, ownerId } });
+class WorkspaceService {
+  async list() {
+    return prisma.workspace.findMany({
+      orderBy: { createdAt: "desc" },
+    });
+  }
+
+  async getById(id) {
+    return prisma.workspace.findUnique({
+      where: { id },
+      include: {
+        // incluir detalhes úteis para reserva
+        rooms: true,
+      },
+    });
+  }
 }
 
-async function listWorkspaces(ownerId) {
-  return prisma.workspace.findMany({ where: { ownerId } });
-}
-
-module.exports = { createWorkspace, listWorkspaces };
+module.exports = new WorkspaceService();

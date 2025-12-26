@@ -12,17 +12,5 @@ services:
     volumes:
       - db_data:/var/lib/postgresql/data
 
-  api:
-    container_name: workly-api
-    build: .
-    restart: on-failure
-    depends_on:
-      - db
-    env_file:
-      - .env.docker
-    ports:
-      - "4000:4000"
-    command: sh -c "npx prisma migrate deploy && node src/server.js"
-
 volumes:
   db_data:

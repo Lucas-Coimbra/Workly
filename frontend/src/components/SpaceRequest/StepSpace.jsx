@@ -1,7 +1,12 @@
 import { Building2 } from "lucide-react";
 import { spaceTypes, brazilStates } from "../../mocks/mockData";
 
-export default function StepSpace({ formData, onChange, errors = {} }) {
+export default function StepSpace({
+  formData,
+  onChange,
+  errors,
+  onZipCodeChange = {},
+}) {
   const baseInput =
     "w-full h-[48px] px-[14px] rounded-[10px] border text-[14px] text-[#111827] placeholder:text-[#9ca3af] focus:outline-none focus:ring-2";
 
@@ -117,10 +122,11 @@ export default function StepSpace({ formData, onChange, errors = {} }) {
             </label>
             <input
               value={formData.zipCode}
-              onChange={(e) => onChange("zipCode", e.target.value)}
+              onChange={(e) => onZipCodeChange(e.target.value)}
               placeholder="00000-000"
               className={`${baseInput} ${errors.zipCode ? error : normal}`}
             />
+
             {errors.zipCode && (
               <p className="mt-[6px] text-[13px] text-[#dc2626]">
                 {errors.zipCode}

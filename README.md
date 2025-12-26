@@ -10,5 +10,5 @@ Relatórios de ocupação e faturamento.
 
 Perfis de acesso:
 Usuário: reserva espaços e consulta histórico.
-Administrador do espaço: controla planos, recursos e relatórios.
+Administrador: controla planos, recursos e relatórios.
 Equipe de suporte: atende chamados e gerencia infraestrutura.
