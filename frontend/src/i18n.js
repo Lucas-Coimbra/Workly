@@ -19,6 +19,20 @@ const resources = {
       loadingSettings: "Carregando configurações...",
       errorLoadSettings: "Erro ao carregar configurações",
 
+      errors: {
+        loadSettings: "Erro ao carregar configurações",
+        saveNotification: "Erro ao salvar configurações de notificação",
+        savePreferences: "Erro ao salvar preferências",
+        passwordMismatch: "As senhas não coincidem",
+        passwordEmpty: "Preencha todos os campos de senha",
+        passwordTooShort: "A nova senha deve ter pelo menos 8 caracteres",
+        securityUpdate: "Erro ao atualizar configurações de segurança",
+        twoFAEnable: "Erro ao ativar 2FA",
+        twoFADisable: "Erro ao solicitar código para desativar o 2FA",
+        invalidCode: "Código inválido",
+        incorrectPassword: "Senha incorreta",
+      },
+
       dangerZone: {
         title: "Zona de Perigo",
         subtitle: "Ações irreversíveis",
@@ -266,6 +280,20 @@ const resources = {
       settingsDescription: "Manage your preferences and account settings",
       loadingSettings: "Loading settings...",
       errorLoadSettings: "Failed to load settings",
+
+      errors: {
+        loadSettings: "Failed to load settings",
+        saveNotification: "Failed to save notification settings",
+        savePreferences: "Failed to save preferences",
+        passwordMismatch: "Passwords do not match",
+        passwordEmpty: "Please fill in all password fields",
+        passwordTooShort: "New password must be at least 8 characters",
+        securityUpdate: "Failed to update security settings",
+        twoFAEnable: "Failed to enable 2FA",
+        twoFADisable: "Failed to request code to disable 2FA",
+        invalidCode: "Invalid code",
+        incorrectPassword: "Incorrect password",
+      },
 
       dangerZone: {
         title: "Danger Zone",

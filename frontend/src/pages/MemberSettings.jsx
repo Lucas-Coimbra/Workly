@@ -24,6 +24,7 @@ import i18n from "../i18n";
 
 export default function MemberSettings({ onLogout }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   // ================== NOTIFICATIONS ==================
   const [emailNotifications, setEmailNotifications] = useState(null);
@@ -36,7 +37,6 @@ export default function MemberSettings({ onLogout }) {
   const [language, setLanguage] = useState("pt-BR");
   const [timezone, setTimezone] = useState("America/Sao_Paulo");
   const [currency, setCurrency] = useState("BRL");
-  const { t } = useTranslation();
 
   useEffect(() => {
     if (language) {
@@ -87,16 +87,14 @@ export default function MemberSettings({ onLogout }) {
           i18n.changeLanguage(me.settings.language);
         }
       } catch (err) {
-        setSaveError(
-          err?.response?.data?.message || "Erro ao carregar configurações"
-        );
+        setSaveError(err?.response?.data?.message || t("errors.loadSettings"));
       } finally {
         setSettingsLoading(false);
       }
     }
 
     loadMe();
-  }, []);
+  }, [t]);
 
   // ================== HELPERS ==================
   const showError = (message, timeout = 4000) => {
@@ -122,10 +120,7 @@ export default function MemberSettings({ onLogout }) {
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err) {
-      showError(
-        err?.response?.data?.message ||
-          "Erro ao salvar configurações de notificação"
-      );
+      showError(err?.response?.data?.message || t("errors.saveNotification"));
     }
   };
 
@@ -138,38 +133,34 @@ export default function MemberSettings({ onLogout }) {
     try {
       setSaveError("");
 
-      // Salva no backend
       await updatePreferencesSettings({
         language: newLanguage,
         timezone: newTimezone,
         currency: newCurrency,
       });
 
-      // Atualiza estado global apenas após salvar
       setLanguage(newLanguage);
       setTimezone(newTimezone);
       setCurrency(newCurrency);
 
-      // Atualiza i18n somente após salvar
       i18n.changeLanguage(newLanguage);
 
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err) {
-      showError(err?.response?.data?.message || "Erro ao salvar preferências");
+      showError(err?.response?.data?.message || t("errors.savePreferences"));
     }
   };
 
   // ================== PASSWORD ==================
   const handleChangePassword = async () => {
     if (!currentPassword || !newPassword || !confirmPassword)
-      return showError("Preencha todos os campos de senha");
+      return showError(t("errors.passwordEmpty"));
 
     if (newPassword !== confirmPassword)
-      return showError("As senhas não coincidem");
+      return showError(t("errors.passwordMismatch"));
 
-    if (newPassword.length < 8)
-      return showError("A nova senha deve ter pelo menos 8 caracteres");
+    if (newPassword.length < 8) return showError(t("errors.passwordTooShort"));
 
     try {
       await updateSecuritySettings({
@@ -184,10 +175,7 @@ export default function MemberSettings({ onLogout }) {
       setConfirmPassword("");
       setTimeout(() => setSaveSuccess(false), 3000);
     } catch (err) {
-      showError(
-        err?.response?.data?.message ||
-          "Erro ao atualizar configurações de segurança"
-      );
+      showError(err?.response?.data?.message || t("errors.securityUpdate"));
     }
   };
 
@@ -201,7 +189,9 @@ export default function MemberSettings({ onLogout }) {
       await onLogout();
       navigate("/login");
     } catch (err) {
-      setDeleteError(err?.response?.data?.message || "Senha incorreta");
+      setDeleteError(
+        err?.response?.data?.message || t("errors.incorrectPassword")
+      );
     } finally {
       setDeleting(false);
     }
@@ -218,7 +208,7 @@ export default function MemberSettings({ onLogout }) {
         setTwoFAAction("enable");
         setShowTwoFAModal(true);
       } catch (err) {
-        showError(err?.response?.data?.message || "Erro ao ativar 2FA");
+        showError(err?.response?.data?.message || t("errors.twoFAEnable"));
       } finally {
         setTwoFALoading(false);
       }
@@ -229,10 +219,7 @@ export default function MemberSettings({ onLogout }) {
         setTwoFAAction("disable");
         setShowTwoFAModal(true);
       } catch (err) {
-        showError(
-          err?.response?.data?.message ||
-            "Erro ao solicitar código para desativar o 2FA"
-        );
+        showError(err?.response?.data?.message || t("errors.twoFADisable"));
       } finally {
         setTwoFALoading(false);
       }
@@ -254,7 +241,7 @@ export default function MemberSettings({ onLogout }) {
       setShowTwoFAModal(false);
       setTwoFAError("");
     } catch (err) {
-      setTwoFAError(err?.response?.data?.message || "Código inválido");
+      setTwoFAError(err?.response?.data?.message || t("errors.invalidCode"));
     } finally {
       setTwoFALoading(false);
     }
