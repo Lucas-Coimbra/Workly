@@ -24,8 +24,9 @@ async function markAsRead(req, res, next) {
         id: Number(req.params.id),
         userId: req.userId,
         deletedAt: null,
+        readAt: null,
       },
-      data: { read: true },
+      data: { readAt: new Date() },
     });
 
     res.sendStatus(204);
@@ -39,10 +40,10 @@ async function markAllAsRead(req, res, next) {
     await prisma.notification.updateMany({
       where: {
         userId: req.userId,
-        read: false,
+        readAt: null,
         deletedAt: null,
       },
-      data: { read: true },
+      data: { readAt: new Date() },
     });
 
     res.sendStatus(204);
@@ -56,7 +57,7 @@ async function unreadCount(req, res, next) {
     const count = await prisma.notification.count({
       where: {
         userId: req.userId,
-        read: false,
+        readAt: null,
         deletedAt: null,
       },
     });

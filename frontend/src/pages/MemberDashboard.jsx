@@ -56,7 +56,7 @@ export default function MemberDashboard() {
           {/* Conteúdo principal */}
           <div className="space-y-6">
             {/* Cards de estatísticas */}
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-2 gap-4">
               <Card className="p-6 bg-gradient-to-br from-blue-50 to-white border-blue-100">
                 <div className="flex items-center justify-between mb-4">
                   <p className="text-sm text-gray-600">Reservas Ativas</p>
@@ -77,17 +77,6 @@ export default function MemberDashboard() {
                 </div>
                 <h3 className="text-gray-900 mb-1">45h</h3>
                 <p className="text-xs text-gray-500">Este mês</p>
-              </Card>
-
-              <Card className="p-6 bg-gradient-to-br from-green-50 to-white border-green-100">
-                <div className="flex items-center justify-between mb-4">
-                  <p className="text-sm text-gray-600">Créditos</p>
-                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                    <DollarSign className="w-5 h-5 text-green-600" />
-                  </div>
-                </div>
-                <h3 className="text-gray-900 mb-1">R$ 350</h3>
-                <p className="text-xs text-gray-500">Disponível</p>
               </Card>
             </div>
 

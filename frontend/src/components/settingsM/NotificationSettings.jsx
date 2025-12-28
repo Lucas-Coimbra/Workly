@@ -1,6 +1,7 @@
 import { Card, Label, Button } from "@/components/ui";
 import { Bell, Mail, Smartphone } from "lucide-react";
 import ToggleSwitch from "../ToggleSwitch";
+import { useTranslation } from "react-i18next";
 
 export default function NotificationSettings({
   emailNotifications,
@@ -15,39 +16,41 @@ export default function NotificationSettings({
   setWeeklyReport,
   handleSaveNotifications,
 }) {
+  const { t } = useTranslation();
+
   const notifications = [
     {
       icon: <Mail className="w-4 h-4 text-gray-500" />,
-      label: "Notificações por E-mail",
-      description: "Receba atualizações por e-mail",
+      label: t("notifications.email.label"),
+      description: t("notifications.email.description"),
       value: emailNotifications,
       setter: setEmailNotifications,
     },
     {
       icon: <Smartphone className="w-4 h-4 text-gray-500" />,
-      label: "Notificações por SMS",
-      description: "Receba alertas por mensagem de texto",
+      label: t("notifications.sms.label"),
+      description: t("notifications.sms.description"),
       value: smsNotifications,
       setter: setSmsNotifications,
     },
     {
       icon: <Bell className="w-4 h-4 text-gray-500" />,
-      label: "Lembretes de Reserva",
-      description: "Receba lembretes antes das suas reservas",
+      label: t("notifications.reservation.label"),
+      description: t("notifications.reservation.description"),
       value: reservationReminders,
       setter: setReservationReminders,
     },
     {
       icon: <Mail className="w-4 h-4 text-gray-500" />,
-      label: "E-mails Promocionais",
-      description: "Receba ofertas e novidades",
+      label: t("notifications.promo.label"),
+      description: t("notifications.promo.description"),
       value: promotionalEmails,
       setter: setPromotionalEmails,
     },
     {
       icon: <Mail className="w-4 h-4 text-gray-500" />,
-      label: "Relatório Semanal",
-      description: "Resumo semanal de suas atividades",
+      label: t("notifications.weekly.label"),
+      description: t("notifications.weekly.description"),
       value: weeklyReport,
       setter: setWeeklyReport,
     },
@@ -60,10 +63,8 @@ export default function NotificationSettings({
           <Bell className="w-5 h-5 text-blue-600" />
         </div>
         <div>
-          <h2 className="text-gray-900">Notificações</h2>
-          <p className="text-sm text-gray-600">
-            Configure como deseja receber notificações
-          </p>
+          <h2 className="text-gray-900">{t("notifications.title")}</h2>
+          <p className="text-sm text-gray-600">{t("notifications.subtitle")}</p>
         </div>
       </div>
 
@@ -80,8 +81,9 @@ export default function NotificationSettings({
               </div>
               <ToggleSwitch isChecked={n.value} onChange={n.setter} />
             </div>
+
             {idx < notifications.length - 1 && (
-              <div className="border-t border-gray-200 my-2"></div>
+              <div className="border-t border-gray-200 my-2" />
             )}
           </div>
         ))}
@@ -91,7 +93,7 @@ export default function NotificationSettings({
         className="w-full mt-6 bg-blue-600 hover:bg-blue-700"
         onClick={handleSaveNotifications}
       >
-        Salvar Preferências de Notificação
+        {t("notifications.save")}
       </Button>
     </Card>
   );

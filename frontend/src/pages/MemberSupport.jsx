@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 import Header from "../components/Header";
 import Footer from "../components/Footer";
@@ -22,13 +23,11 @@ import { SUPPORT_STATUS } from "../constants/support.constants";
 
 export default function MemberSupport({ onLogout }) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { user } = useAuth();
   const [selectedTicketId, setSelectedTicketId] = useState(null);
   const [newMessage, setNewMessage] = useState("");
 
-  /* ======================
-     HOOKS
-  ====================== */
   const { tickets, loading: loadingTickets, reload } = useSupportTickets();
   const { averageResolutionTime, loading: loadingMetrics } =
     useSupportMetrics();
@@ -41,17 +40,8 @@ export default function MemberSupport({ onLogout }) {
 
   const { submitTicket, loading: creatingTicket } = useCreateSupportTicket();
 
-  /* ======================
-     EFFECTS
-  ====================== */
-  // limpa mensagem ao trocar de chamado
-  useEffect(() => {
-    setNewMessage("");
-  }, [selectedTicketId]);
+  useEffect(() => setNewMessage(""), [selectedTicketId]);
 
-  /* ======================
-     MÉTRICAS
-  ====================== */
   const openTickets = tickets.filter(
     (t) =>
       t.status === SUPPORT_STATUS.OPEN || t.status === SUPPORT_STATUS.PROGRESS
@@ -61,40 +51,26 @@ export default function MemberSupport({ onLogout }) {
     (t) => t.status === SUPPORT_STATUS.RESOLVED
   );
 
-  /* ======================
-     HANDLERS
-  ====================== */
   async function handleSendReply() {
     if (!newMessage.trim() || !selectedTicketId) return;
-
     await sendMessage(newMessage);
     setNewMessage("");
   }
 
   async function handleCreateTicket(data) {
     const created = await submitTicket(data);
-
-    // evita race condition
     setSelectedTicketId(created.id);
     await reload();
   }
 
   function formatMinutes(minutes) {
     if (!minutes || minutes <= 0) return "—";
-
-    if (minutes < 60) {
-      return `${minutes} min`;
-    }
-
+    if (minutes < 60) return `${minutes} min`;
     const hours = Math.floor(minutes / 60);
     const remainingMinutes = minutes % 60;
-
     return remainingMinutes ? `${hours}h ${remainingMinutes}min` : `${hours}h`;
   }
 
-  /* ======================
-     RENDER
-  ====================== */
   return (
     <div className="min-h-screen flex flex-col">
       <Header
@@ -110,9 +86,9 @@ export default function MemberSupport({ onLogout }) {
           <Card className="p-6 bg-gradient-to-r from-blue-600 to-blue-700 text-white border-0 shadow">
             <div className="flex items-center justify-between">
               <div>
-                <h2 className="text-xl font-semibold">Central de Suporte</h2>
+                <h2 className="text-xl font-semibold">{t("support.title")}</h2>
                 <p className="text-blue-100 text-sm">
-                  Gerencie seus chamados e tire suas dúvidas
+                  {t("support.description")}
                 </p>
               </div>
 
@@ -122,7 +98,7 @@ export default function MemberSupport({ onLogout }) {
                 trigger={
                   <Button className="bg-white text-blue-600 hover:bg-blue-50">
                     <Plus className="w-4 h-4 mr-2" />
-                    Novo Chamado
+                    {t("support.newTicket")}
                   </Button>
                 }
               />
@@ -133,7 +109,9 @@ export default function MemberSupport({ onLogout }) {
           <div className="grid md:grid-cols-4 gap-4">
             <Card className="p-6 bg-white border-gray-200">
               <div className="flex justify-between mb-2">
-                <p className="text-sm text-gray-600">Total de Chamados</p>
+                <p className="text-sm text-gray-600">
+                  {t("support.stats.total")}
+                </p>
                 <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-blue-100">
                   <FileText className="w-5 h-5 text-blue-600" />
                 </div>
@@ -143,7 +121,9 @@ export default function MemberSupport({ onLogout }) {
 
             <Card className="p-6 bg-white border-gray-200">
               <div className="flex justify-between mb-2">
-                <p className="text-sm text-gray-600">Em Andamento</p>
+                <p className="text-sm text-gray-600">
+                  {t("support.stats.inProgress")}
+                </p>
                 <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-purple-100">
                   <AlertCircle className="w-5 h-5 text-purple-600" />
                 </div>
@@ -153,7 +133,9 @@ export default function MemberSupport({ onLogout }) {
 
             <Card className="p-6 bg-white border-gray-200">
               <div className="flex justify-between mb-2">
-                <p className="text-sm text-gray-600">Resolvidos</p>
+                <p className="text-sm text-gray-600">
+                  {t("support.stats.resolved")}
+                </p>
                 <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-green-100">
                   <CheckCircle className="w-5 h-5 text-green-600" />
                 </div>
@@ -165,12 +147,13 @@ export default function MemberSupport({ onLogout }) {
 
             <Card className="p-6 bg-white border-gray-200">
               <div className="flex justify-between mb-2">
-                <p className="text-sm text-gray-600">Tempo Médio</p>
+                <p className="text-sm text-gray-600">
+                  {t("support.stats.avgTime")}
+                </p>
                 <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-orange-100">
                   <Clock className="w-5 h-5 text-orange-600" />
                 </div>
               </div>
-
               <h3 className="text-xl font-semibold">
                 {loadingMetrics ? "—" : formatMinutes(averageResolutionTime)}
               </h3>
@@ -179,7 +162,6 @@ export default function MemberSupport({ onLogout }) {
 
           {/* CONTEÚDO */}
           <div className="grid lg:grid-cols-3 gap-6">
-            {/* LISTA */}
             <div className="lg:col-span-1">
               <TicketList
                 tickets={tickets}
@@ -189,7 +171,6 @@ export default function MemberSupport({ onLogout }) {
               />
             </div>
 
-            {/* DETALHES */}
             <div className="lg:col-span-2">
               <TicketDetails
                 ticket={loadingTicket ? null : selectedTicket}

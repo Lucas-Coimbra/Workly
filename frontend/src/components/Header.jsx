@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useNotifications } from "../hooks/useNotifications";
 import { timeAgo } from "../../utils/timeAgo";
 import MobileMenu from "./MobileMenu";
+import { useTranslation } from "react-i18next";
 
 export default function Header() {
   const [showUserMenu, setShowUserMenu] = useState(false);
@@ -11,6 +12,8 @@ export default function Header() {
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
+
   const { user, logout, isAuthenticated } = useAuth();
   const { notifications, unreadCount, markRead, markAll, remove } =
     useNotifications();
@@ -54,10 +57,10 @@ export default function Header() {
 
   const roleLabel =
     role === "ADMIN"
-      ? "Administrador"
+      ? t("roles.ADMIN")
       : role === "SUPPORT"
-      ? "Suporte"
-      : "Membro";
+      ? t("roles.SUPPORT")
+      : t("roles.MEMBER");
 
   const handleLogout = async () => {
     await logout();
@@ -89,7 +92,7 @@ export default function Header() {
             <div className="hidden sm:block">
               <div className="text-lg font-semibold text-slate-800">Workly</div>
               <div className="text-xs text-slate-500">
-                {roleLabel} • Plano {user.plan?.name}
+                {roleLabel} • {t("plan")} {user.plan?.name}
               </div>
             </div>
           </div>
@@ -109,7 +112,7 @@ export default function Header() {
                       : "text-gray-600 hover:bg-gray-50"
                   }`}
                 >
-                  {link.label}
+                  {t(`nav.${link.label}`)}
                 </button>
               );
             })}
@@ -177,14 +180,16 @@ export default function Header() {
               {showNotifications && (
                 <div className="absolute right-0 mt-3 w-80 bg-white border border-slate-200 rounded-xl shadow-xl z-50 overflow-hidden">
                   <div className="flex items-center justify-between px-4 py-2 border-b">
-                    <span className="text-sm font-semibold">Notificações</span>
+                    <span className="text-sm font-semibold">
+                      {t("headerNotifications.title")}
+                    </span>
 
                     {unreadCount > 0 && (
                       <button
                         onClick={markAll}
                         className="text-xs text-blue-600 hover:underline"
                       >
-                        Marcar todas como lidas
+                        {t("headerNotifications.markAll")}
                       </button>
                     )}
                   </div>
@@ -192,23 +197,22 @@ export default function Header() {
                   <div className="max-h-80 overflow-y-auto">
                     {notifications.length === 0 ? (
                       <div className="px-4 py-6 text-sm text-gray-500 text-center">
-                        Nenhuma notificação
+                        {t("headerNotifications.none")}
                       </div>
                     ) : (
                       notifications.map((n) => (
                         <div
                           key={n.id}
                           className={`flex items-start gap-2 px-4 py-3 text-sm border-b last:border-b-0 hover:bg-gray-50 ${
-                            !n.read ? "bg-blue-50" : ""
+                            !n.readAt ? "bg-blue-50" : ""
                           }`}
                         >
-                          {/* Conteúdo da notificação */}
                           <button
                             onClick={() => markRead(n.id)}
                             className="flex-1 text-left"
                           >
                             <div className="font-medium text-slate-800">
-                              {n.title || "Notificação"}
+                              {n.title || t("headerNotifications.defaultTitle")}
                             </div>
                             <div className="text-xs text-gray-500">
                               {n.message}
@@ -218,11 +222,10 @@ export default function Header() {
                             </div>
                           </button>
 
-                          {/* Excluir */}
                           <button
                             onClick={() => remove(n.id)}
                             className="p-1 text-gray-400 hover:text-rose-500"
-                            title="Excluir notificação"
+                            title={t("common.delete")}
                           >
                             🗑
                           </button>
@@ -249,7 +252,7 @@ export default function Header() {
                     {user.name}
                   </div>
                   <div className="text-xs text-slate-500">
-                    {roleLabel} • Plano {user.plan?.name}
+                    {roleLabel} • {t("plan")} {user.plan?.name}
                   </div>
                 </div>
               </button>
@@ -260,14 +263,14 @@ export default function Header() {
                     onClick={() => navigate("/member-profile")}
                     className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
                   >
-                    Perfil
+                    {t("header.profile")}
                   </button>
 
                   <button
                     onClick={() => navigate("/member-settings")}
                     className="w-full flex items-center gap-2 px-4 py-2 text-sm text-slate-700 hover:bg-slate-50"
                   >
-                    Configurações
+                    {t("header.settings")}
                   </button>
 
                   <div className="border-t my-1"></div>
@@ -276,7 +279,7 @@ export default function Header() {
                     onClick={handleLogout}
                     className="w-full flex items-center gap-2 px-4 py-2 text-sm text-rose-600 hover:bg-rose-50"
                   >
-                    Sair
+                    {t("header.logout")}
                   </button>
                 </div>
               )}

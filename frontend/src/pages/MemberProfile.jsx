@@ -6,14 +6,11 @@ import Footer from "../components/Footer";
 
 import ProfileHeader from "../components/profileM/ProfileHeader";
 import StatsCard from "../components/profileM/StatsCard";
-import CreditCard from "../components/profileM/CreditCard";
 import PersonalInfo from "../components/profileM/PersonalInfo";
 import AddressCard from "../components/profileM/AddressCard";
 import PlanCard from "../components/profileM/PlanCard";
 import TransactionsHistory from "../components/profileM/TransactionsHistory";
 
-import AddCreditsModal from "../components/profileM/modals/AddCreditsModal";
-import WithdrawModal from "../components/profileM/modals/WithdrawModal";
 import ChangePlanModal from "../components/profileM/modals/ChangePlanModal";
 
 import { Card, Button } from "../components/ui";
@@ -38,13 +35,6 @@ export default function MemberProfile({ onLogout }) {
 
   const [profileData, setProfileData] = useState(profileDataMock);
   const [tempData, setTempData] = useState({ ...profileDataMock });
-
-  const [accountBalance, setAccountBalance] = useState(350);
-  const [creditAmount, setCreditAmount] = useState("");
-  const [withdrawAmount, setWithdrawAmount] = useState("");
-
-  const [showAddCreditsModal, setShowAddCreditsModal] = useState(false);
-  const [showWithdrawModal, setShowWithdrawModal] = useState(false);
 
   const [showChangePlanModal, setShowChangePlanModal] = useState(false);
   const currentPlanName = currentPlanMock.name;
@@ -101,27 +91,6 @@ export default function MemberProfile({ onLogout }) {
   };
 
   /* =======================
-     CRÉDITOS
-  ======================= */
-  const handleAddCredits = () => {
-    const amount = parseFloat(creditAmount);
-    if (amount > 0) {
-      setAccountBalance((prev) => prev + amount);
-      setCreditAmount("");
-      setShowAddCreditsModal(false);
-    }
-  };
-
-  const handleWithdraw = () => {
-    const amount = parseFloat(withdrawAmount);
-    if (amount > 0 && amount <= accountBalance) {
-      setAccountBalance((prev) => prev - amount);
-      setWithdrawAmount("");
-      setShowWithdrawModal(false);
-    }
-  };
-
-  /* =======================
      HISTÓRICO (BLOQUEADO)
   ======================= */
   const handleViewHistory = () => {
@@ -153,12 +122,6 @@ export default function MemberProfile({ onLogout }) {
             {/* COLUNA ESQUERDA */}
             <div className="space-y-6">
               <ProfileHeader profileData={profileData} stats={statsMock} />
-
-              <CreditCard
-                accountBalance={accountBalance}
-                onAddClick={() => setShowAddCreditsModal(true)}
-                onWithdrawClick={() => setShowWithdrawModal(true)}
-              />
 
               <StatsCard stats={statsMock} />
             </div>
@@ -223,23 +186,6 @@ export default function MemberProfile({ onLogout }) {
       </main>
 
       {/* MODAIS */}
-      <AddCreditsModal
-        open={showAddCreditsModal}
-        onClose={() => setShowAddCreditsModal(false)}
-        creditAmount={creditAmount}
-        setCreditAmount={setCreditAmount}
-        onAdd={handleAddCredits}
-      />
-
-      <WithdrawModal
-        open={showWithdrawModal}
-        onClose={() => setShowWithdrawModal(false)}
-        withdrawAmount={withdrawAmount}
-        setWithdrawAmount={setWithdrawAmount}
-        accountBalance={accountBalance}
-        onWithdraw={handleWithdraw}
-      />
-
       <ChangePlanModal
         open={showChangePlanModal}
         onClose={() => setShowChangePlanModal(false)}

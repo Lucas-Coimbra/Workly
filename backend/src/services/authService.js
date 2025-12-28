@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const { createNotification } = require("./notificationService");
+const twoFAService = require("./twoFAService");
 
 async function register({ name, email, password, phone }) {
   const existing = await prisma.user.findUnique({
@@ -59,18 +60,41 @@ async function register({ name, email, password, phone }) {
 
 async function login({ email, password }) {
   const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) throw { status: 401, message: "Invalid credentials" };
-  const ok = await bcrypt.compare(password, user.password);
-  if (!ok) throw { status: 401, message: "Invalid credentials" };
+  if (!user) throw { status: 401, message: "Credenciais inválidas" };
 
-  console.log("JWT_SECRET:", process.env.JWT_SECRET);
+  const ok = await bcrypt.compare(password, user.password);
+  if (!ok) throw { status: 401, message: "Credenciais inválidas" };
+
+  const settings = await prisma.userSettings.findUnique({
+    where: { userId: user.id },
+  });
+
+  const twoFactorAuth = settings?.twoFactorAuth === true;
+
+  const { password: _, ...userSafe } = user;
+
+  if (twoFactorAuth) {
+    const tempToken = jwt.sign(
+      { userId: user.id },
+      process.env.JWT_TEMP_SECRET,
+      { expiresIn: "10m" }
+    );
+
+    // envia código
+    await twoFAService.enable2FA(user.id);
+
+    return {
+      twoFAEnabled: true,
+      tempToken,
+      user: userSafe, // 🔥 contrato respeitado
+    };
+  }
 
   const token = jwt.sign(
     { userId: user.id, role: user.role },
     process.env.JWT_SECRET,
     { expiresIn: "7d" }
   );
-  const { password: _, ...userSafe } = user;
 
   return {
     token,
@@ -133,4 +157,34 @@ async function resetPassword(token, newPassword) {
   });
 }
 
-module.exports = { register, login, forgotPassword, resetPassword };
+async function generateFinalJWT(userId) {
+  const user = await prisma.user.findUnique({ where: { id: userId } });
+  if (!user) throw { status: 404, message: "Usuário não encontrado" };
+
+  const token = jwt.sign(
+    { userId: user.id, role: user.role },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: "7d",
+    }
+  );
+  return token;
+}
+
+function verifyTempToken(tempToken) {
+  try {
+    const payload = jwt.verify(tempToken, process.env.JWT_TEMP_SECRET);
+    return payload.userId;
+  } catch {
+    throw { status: 401, message: "Token temporário inválido ou expirado" };
+  }
+}
+
+module.exports = {
+  register,
+  login,
+  forgotPassword,
+  resetPassword,
+  generateFinalJWT,
+  verifyTempToken,
+};

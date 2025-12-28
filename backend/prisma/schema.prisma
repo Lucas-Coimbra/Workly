@@ -42,6 +42,19 @@ enum SupportPriority {
   high
 }
 
+enum PaymentType {
+  HOURLY
+  DAILY
+  MONTHLY
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  CANCELED
+}
+
+
 /**
  * ======================
  * MODELS
@@ -60,6 +73,8 @@ model User {
 
   planId Int?
   plan   Plan? @relation(fields: [planId], references: [id])
+
+  settings UserSettings?
 
   reservations        Reservation[]
   notifications       Notification[]
@@ -122,6 +137,7 @@ model Workspace {
   approvedFromRequest   SpaceRequest? @relation("SpaceApproval", fields: [approvedFromRequestId], references: [id])
 
   rooms Room[]
+  reservations Reservation[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -134,29 +150,40 @@ model Room {
   workspaceId Int
 
   workspace    Workspace     @relation(fields: [workspaceId], references: [id])
-  reservations Reservation[]
+
 }
 
 model Reservation {
-  id        Int      @id @default(autoincrement())
-  date      DateTime
-  startTime DateTime
-  endTime   DateTime
-  userId    Int
-  roomId    Int
-  paid      Boolean  @default(false)
+  id          Int       @id @default(autoincrement())
+  userId      Int
+  workspaceId Int
+
+  date        DateTime
+  startTime   DateTime?
+  endTime     DateTime?
+  endDate     DateTime?
+  paymentType PaymentType
+  total       Float
+
+  status      ReservationStatus @default(PENDING)
+  paid        Boolean   @default(false)
+  canceledAt DateTime?
+
   createdAt DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id])
-  room Room @relation(fields: [roomId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
+  workspace Workspace @relation(fields: [workspaceId], references: [id])
 }
+
 
 model Notification {
   id        Int       @id @default(autoincrement())
   title     String
   message   String
   type      String    @default("INFO")
-  read      Boolean   @default(false)
+
+  readAt    DateTime?
+
   deletedAt DateTime?
 
   userId Int
@@ -164,6 +191,7 @@ model Notification {
 
   createdAt DateTime @default(now())
 }
+
 
 model SupportTicket {
   id          Int                 @id @default(autoincrement())
@@ -240,4 +268,28 @@ model SpaceRequest {
 
   reviewedAt DateTime?
   createdAt  DateTime  @default(now())
+}
+
+model UserSettings {
+  id Int @id @default(autoincrement())
+
+  userId Int @unique
+  user   User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  emailNotifications    Boolean @default(true)
+  smsNotifications      Boolean @default(false)
+  reservationReminders  Boolean @default(true)
+  promotionalEmails     Boolean @default(true)
+  weeklyReport          Boolean @default(false)
+
+  language  String @default("pt-BR")
+  timezone  String @default("America/Sao_Paulo")
+  currency  String @default("BRL")
+
+  twoFactorAuth Boolean @default(false)
+  twoFactorTempCode   String?
+  twoFactorExpiresAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

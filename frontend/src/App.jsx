@@ -16,6 +16,7 @@ import MemberDashboard from "./pages/MemberDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import SupportDashboard from "./pages/SupportDashboard";
 import Reservations from "./pages/Reservations";
+import MyReservations from "./components/reservations/MyReservations";
 import Payment from "./pages/Payment";
 import History from "./pages/History";
 import MemberSupport from "./pages/MemberSupport";
@@ -43,6 +44,7 @@ export default function App() {
           <Route path="/member-profile" element={<MemberProfile />} />
           <Route path="/member-settings" element={<MemberSettings />} />
           <Route path="/reservations" element={<Reservations />} />
+          <Route path="/my-reservations" element={<MyReservations />} />
           <Route path="/payment" element={<Payment />} />
           <Route path="/history" element={<History />} />
           <Route path="/support" element={<MemberSupport />} />

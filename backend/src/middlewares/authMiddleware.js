@@ -3,19 +3,18 @@ const prisma = require("../config/prisma");
 
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers.authorization;
-
   if (!authHeader?.startsWith("Bearer ")) {
     return res.status(401).json({ message: "Token missing or invalid" });
   }
 
   const token = authHeader.split(" ")[1];
-
   try {
     const payload = jwt.verify(token, process.env.JWT_SECRET);
     req.userId = payload.userId;
     req.userRole = payload.role;
     next();
-  } catch {
+  } catch (err) {
+    console.error("JWT error:", err);
     return res.status(401).json({ message: "Invalid token" });
   }
 };

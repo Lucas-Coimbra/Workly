@@ -12,7 +12,7 @@ const planRoutes = require("./routes/plan.Routes");
 const meRoutes = require("./routes/me.Routes");
 const supportRoutes = require("./routes/support.routes");
 const spaceRequestRoutes = require("./routes/spaceRequest.routes");
-
+const twoFARoutes = require("./routes/twoFA.Routes");
 const { errorHandler } = require("./middlewares/errorMiddleware");
 
 const app = express();
@@ -37,6 +37,7 @@ app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/plans", planRoutes);
 app.use("/api/me", meRoutes);
 app.use("/api/support", supportRoutes);
+app.use("/api", twoFARoutes);
 app.use("/api", spaceRequestRoutes);
 
 // error handler

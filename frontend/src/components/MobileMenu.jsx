@@ -1,5 +1,6 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
 
 const icons = {
   Início: (
@@ -38,7 +39,6 @@ const icons = {
       <line x1="3" y1="10" x2="21" y2="10" />
     </svg>
   ),
-
   Pagamentos: (
     <svg
       className="w-5 h-5"
@@ -52,7 +52,6 @@ const icons = {
       <line x1="6" y1="15" x2="10" y2="15" />
     </svg>
   ),
-
   Histórico: (
     <svg
       className="w-5 h-5"
@@ -90,6 +89,7 @@ export default function MobileMenu({
 }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
 
   if (!open) return null;
 
@@ -118,7 +118,7 @@ export default function MobileMenu({
             onClick={onClose}
             className="flex items-center justify-center w-10 h-10 rounded-full
               bg-slate-100 hover:bg-slate-200 text-slate-700"
-            aria-label="Fechar menu"
+            aria-label={t("headerMobile.closeMenu")}
           >
             <svg
               className="w-5 h-5"
@@ -134,6 +134,7 @@ export default function MobileMenu({
               />
             </svg>
           </button>
+
           {/* Avatar */}
           <div className="w-9 h-9 rounded-full bg-gradient-to-tr from-slate-700 to-slate-900 text-white flex items-center justify-center text-sm font-semibold shrink-0">
             {user.name
@@ -143,13 +144,14 @@ export default function MobileMenu({
               .join("")
               .toUpperCase()}
           </div>
+
           {/* Nome + plano */}
           <div>
             <div className="text-sm font-semibold text-slate-800">
               {user.name}
             </div>
             <div className="text-xs text-slate-500">
-              {roleLabel} • Plano {user.plan?.name}
+              {roleLabel} • {t("plan")} {user.plan?.name}
             </div>
           </div>
         </div>
@@ -178,7 +180,7 @@ export default function MobileMenu({
                 `}
               >
                 <span className="shrink-0 opacity-80">{icons[link.label]}</span>
-                <span>{link.label}</span>
+                <span>{t(`nav.${link.label}`)}</span>
               </button>
             );
           })}
@@ -196,7 +198,7 @@ export default function MobileMenu({
               hover:bg-rose-50 transition
             "
           >
-            🚪 Sair
+            🚪 {t("headerMobile.logout")}
           </button>
         </div>
       </aside>

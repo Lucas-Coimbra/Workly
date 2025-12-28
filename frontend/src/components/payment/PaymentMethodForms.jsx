@@ -1,33 +1,15 @@
-import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Input, Label, Button } from "@/components/ui";
-import {
-  QrCode,
-  Shield,
-  Wallet,
-  Clock,
-  CheckCircle,
-  AlertCircle,
-  Check,
-} from "lucide-react";
+import { QrCode, Shield, Clock, Check } from "lucide-react";
 
 export default function PaymentMethodForms({
   paymentMethod,
-  secondaryMethod,
   cardData,
   setCardData,
-  safeReservation,
-  accountBalance,
 }) {
-  const navigate = useNavigate();
-
-  const total = safeReservation?.total ?? 0;
-  const accountCovers = accountBalance >= total;
-
   const [copied, setCopied] = useState(false);
 
-  //--- Form handlers --------------------------------------------------
-
+  // --- Form handlers --------------------------------------------------
   const handleCardNumber = (e) => {
     const cleaned = e.target.value.replace(/\D/g, "").slice(0, 16);
     const grouped = cleaned.match(/.{1,4}/g)?.join(" ") || cleaned;
@@ -49,10 +31,7 @@ export default function PaymentMethodForms({
   };
 
   const needsCardPanel =
-    paymentMethod === "credit" ||
-    paymentMethod === "debit" ||
-    secondaryMethod === "credit" ||
-    secondaryMethod === "debit";
+    paymentMethod === "credit" || paymentMethod === "debit";
 
   return (
     <div className="p-6 border border-gray-200 rounded-2xl bg-white shadow-sm mt-6">
@@ -124,7 +103,7 @@ export default function PaymentMethodForms({
       )}
 
       {/*-------- PIX --------*/}
-      {(paymentMethod === "pix" || secondaryMethod === "pix") && (
+      {paymentMethod === "pix" && (
         <div className="text-center space-y-4">
           <div className="w-64 h-64 bg-gray-100 border-2 border-dashed border-gray-300 rounded-lg flex items-center justify-center mx-auto mt-2">
             <QrCode className="w-32 h-32 text-gray-400" />
@@ -164,49 +143,6 @@ export default function PaymentMethodForms({
               automaticamente.
             </p>
           </div>
-        </div>
-      )}
-
-      {/*-------- CRÉDITOS --------*/}
-      {paymentMethod === "account" && (
-        <div className="mt-4">
-          <div className="p-4 bg-gradient-to-br from-blue-50 to-purple-50 border-2 border-blue-200 rounded-lg">
-            <div className="flex items-center justify-between mb-3">
-              <div className="flex items-center gap-2">
-                <Wallet className="w-5 h-5 text-blue-600" />
-                <span className="text-gray-900">Saldo Disponível</span>
-              </div>
-              <span className="text-2xl text-blue-600">
-                R$ {accountBalance.toFixed(2)}
-              </span>
-            </div>
-          </div>
-
-          {!accountCovers ? (
-            <div className="flex items-start gap-2 p-3 bg-orange-50 border border-orange-200 rounded-lg mt-3">
-              <AlertCircle className="w-5 h-5 text-orange-600 mt-0.5" />
-              <p className="text-sm text-gray-700">
-                <strong>Saldo insuficiente.</strong> Parte será paga por outro
-                método.
-              </p>
-            </div>
-          ) : (
-            <div className="flex items-start gap-2 p-3 bg-green-50 border border-green-200 rounded-lg mt-3">
-              <CheckCircle className="w-5 h-5 text-green-600 mt-0.5" />
-              <p className="text-sm text-gray-700">
-                <strong>Saldo suficiente!</strong> A reserva será paga
-                totalmente com créditos.
-              </p>
-            </div>
-          )}
-
-          <Button
-            variant="outline"
-            className="w-full mt-3"
-            onClick={() => navigate?.("/profile")}
-          >
-            Adicionar Créditos
-          </Button>
         </div>
       )}
     </div>

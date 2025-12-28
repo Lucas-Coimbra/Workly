@@ -13,14 +13,11 @@ exports.register = async (req, res, next) => {
 
 exports.login = async (req, res, next) => {
   try {
-    console.log("LOGIN BODY:", req.body);
-
     const data = loginSchema.parse(req.body);
     const out = await authService.login(data);
 
     res.json(out);
   } catch (err) {
-    console.error("LOGIN ERROR:", err);
     next(err);
   }
 };

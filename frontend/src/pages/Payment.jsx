@@ -7,8 +7,7 @@ import PaymentEmpty from "../components/payment/PaymentEmpty";
 import PaymentSuccess from "../components/payment/PaymentSuccess";
 import PaymentMethodSelector from "../components/payment/PaymentMethodSelector";
 import PaymentSummary from "../components/payment/PaymentSummary";
-import { useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function Payment({ onLogout }) {
   const navigate = useNavigate();
@@ -42,8 +41,6 @@ export default function Payment({ onLogout }) {
     : null;
 
   const [paymentMethod, setPaymentMethod] = useState("credit");
-  const [secondaryMethod, setSecondaryMethod] = useState(null);
-
   const [cardData, setCardData] = useState({
     number: "",
     name: "",
@@ -53,14 +50,9 @@ export default function Payment({ onLogout }) {
 
   const [isProcessing, setIsProcessing] = useState(false);
   const [paymentSuccess, setPaymentSuccess] = useState(false);
-  const [accountBalance] = useState(350.0);
 
   const handlePayment = () => {
-    const needsCard =
-      (paymentMethod !== "pix" && paymentMethod !== "account") ||
-      (paymentMethod === "account" &&
-        accountBalance < safeReservation.total &&
-        (secondaryMethod === "credit" || secondaryMethod === "debit"));
+    const needsCard = paymentMethod !== "pix";
 
     if (
       needsCard &&
@@ -99,7 +91,6 @@ export default function Payment({ onLogout }) {
           onLogout={onLogout}
           currentPage="payment"
         />
-        <PaymentSuccess safeReservation={safeReservation} navigate={navigate} />
         <Footer />
       </div>
     );
@@ -138,13 +129,9 @@ export default function Payment({ onLogout }) {
               <PaymentMethodSelector
                 paymentMethod={paymentMethod}
                 setPaymentMethod={setPaymentMethod}
-                secondaryMethod={secondaryMethod}
-                setSecondaryMethod={setSecondaryMethod}
                 cardData={cardData}
                 setCardData={setCardData}
-                accountBalance={accountBalance}
                 safeReservation={safeReservation}
-                navigate={navigate}
               />
             </div>
 
@@ -152,8 +139,6 @@ export default function Payment({ onLogout }) {
               <PaymentSummary
                 safeReservation={safeReservation}
                 paymentMethod={paymentMethod}
-                secondaryMethod={secondaryMethod}
-                accountBalance={accountBalance}
                 cardData={cardData}
                 isProcessing={isProcessing}
                 handlePayment={handlePayment}

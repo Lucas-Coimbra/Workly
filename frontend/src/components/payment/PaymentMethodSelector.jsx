@@ -6,11 +6,8 @@ import PaymentMethodForms from "./PaymentMethodForms";
 export default function PaymentMethodSelector({
   paymentMethod,
   setPaymentMethod,
-  secondaryMethod,
-  setSecondaryMethod,
   cardData,
   setCardData,
-  accountBalance,
   safeReservation,
 }) {
   const navigate = useNavigate();
@@ -21,20 +18,15 @@ export default function PaymentMethodSelector({
       <PaymentMethodOptions
         paymentMethod={paymentMethod}
         setPaymentMethod={setPaymentMethod}
-        secondaryMethod={secondaryMethod}
-        setSecondaryMethod={setSecondaryMethod}
-        accountBalance={accountBalance}
         total={safeReservation?.total ?? 0}
       />
 
       {/* BLOCO INFERIOR */}
       <PaymentMethodForms
         paymentMethod={paymentMethod}
-        secondaryMethod={secondaryMethod}
         cardData={cardData}
         setCardData={setCardData}
         safeReservation={safeReservation}
-        accountBalance={accountBalance}
         navigate={navigate}
       />
     </div>

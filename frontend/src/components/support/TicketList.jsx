@@ -1,3 +1,4 @@
+import { useTranslation } from "react-i18next";
 import { Card } from "../ui/Card";
 import { Badge } from "../ui/Badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../ui/Tabs";
@@ -9,7 +10,7 @@ import {
 
 function formatDate(date) {
   if (!date) return "—";
-  return new Date(date).toLocaleString("pt-BR", {
+  return new Date(date).toLocaleString(undefined, {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -23,6 +24,8 @@ export default function TicketList({
   selectedTicketId,
   onSelect,
 }) {
+  const { t } = useTranslation();
+
   const openTickets = tickets.filter(
     (t) =>
       t.status === SUPPORT_STATUS.OPEN || t.status === SUPPORT_STATUS.PROGRESS
@@ -35,22 +38,46 @@ export default function TicketList({
   const renderPriorityBadge = (priority) => {
     switch (priority) {
       case SUPPORT_PRIORITY.HIGH:
-        return <Badge className="bg-red-100 text-red-700">Alta</Badge>;
+        return (
+          <Badge className="bg-red-100 text-red-700">
+            {t("support.ticketList.priority.high")}
+          </Badge>
+        );
       case SUPPORT_PRIORITY.MEDIUM:
-        return <Badge className="bg-yellow-100 text-yellow-700">Média</Badge>;
+        return (
+          <Badge className="bg-yellow-100 text-yellow-700">
+            {t("support.ticketList.priority.medium")}
+          </Badge>
+        );
       default:
-        return <Badge className="bg-gray-100 text-gray-700">Baixa</Badge>;
+        return (
+          <Badge className="bg-gray-100 text-gray-700">
+            {t("support.ticketList.priority.low")}
+          </Badge>
+        );
     }
   };
 
   const renderStatusBadge = (status) => {
     switch (status) {
       case SUPPORT_STATUS.OPEN:
-        return <Badge variant="ticketOpen">Aberto</Badge>;
+        return (
+          <Badge variant="ticketOpen">
+            {t("support.ticketList.status.open")}
+          </Badge>
+        );
       case SUPPORT_STATUS.PROGRESS:
-        return <Badge variant="ticketProgress">Em andamento</Badge>;
+        return (
+          <Badge variant="ticketProgress">
+            {t("support.ticketList.status.inProgress")}
+          </Badge>
+        );
       default:
-        return <Badge variant="ticketResolved">Resolvido</Badge>;
+        return (
+          <Badge variant="ticketResolved">
+            {t("support.ticketList.status.resolved")}
+          </Badge>
+        );
     }
   };
 
@@ -59,7 +86,9 @@ export default function TicketList({
       return (
         <Card className="p-8 text-center bg-white border-gray-200">
           <FileText className="w-10 h-10 text-gray-300 mx-auto mb-3" />
-          <p className="text-sm text-gray-500">Nenhum chamado encontrado</p>
+          <p className="text-sm text-gray-500">
+            {t("support.ticketList.empty")}
+          </p>
         </Card>
       );
     }
@@ -79,7 +108,6 @@ export default function TicketList({
                 {/* Cabeçalho */}
                 <div className="flex items-center gap-2 mb-2">
                   {renderPriorityBadge(ticket.priority)}
-
                   <span className="text-xs text-gray-500">#{ticket.id}</span>
                   <span className="text-xs text-gray-400">•</span>
                   <span className="text-xs text-gray-500">
@@ -103,7 +131,6 @@ export default function TicketList({
                     <Clock className="w-3 h-3" />
                     {formatDate(ticket.updatedAt)}
                   </span>
-
                   <span className="flex items-center gap-1">
                     <MessageSquare className="w-3 h-3" />
                     {ticket.messages?.length ?? 0}
@@ -128,21 +155,19 @@ export default function TicketList({
             value="all"
             className="rounded-lg text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm"
           >
-            Todos
+            {t("support.ticketList.tabs.all")}
           </TabsTrigger>
-
           <TabsTrigger
             value="open"
             className="rounded-lg text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm"
           >
-            Abertos
+            {t("support.ticketList.tabs.open")}
           </TabsTrigger>
-
           <TabsTrigger
             value="resolved"
             className="rounded-lg text-sm data-[state=active]:bg-white data-[state=active]:shadow-sm"
           >
-            Resolvidos
+            {t("support.ticketList.tabs.resolved")}
           </TabsTrigger>
         </TabsList>
 

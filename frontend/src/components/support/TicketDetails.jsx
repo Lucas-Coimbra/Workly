@@ -1,4 +1,5 @@
 import { useRef } from "react";
+import { useTranslation } from "react-i18next";
 import { Card } from "../ui/Card";
 import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
@@ -13,7 +14,6 @@ import {
   Send,
   Paperclip,
 } from "lucide-react";
-
 import {
   SUPPORT_STATUS,
   SUPPORT_PRIORITY,
@@ -21,7 +21,7 @@ import {
 
 function formatDate(date) {
   if (!date) return "—";
-  return new Date(date).toLocaleString("pt-BR", {
+  return new Date(date).toLocaleString(undefined, {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -30,7 +30,7 @@ function formatDate(date) {
   });
 }
 
-export default function TicketDetails({
+export default function TicketDetailsTranslated({
   ticket,
   newMessage,
   onChange,
@@ -38,6 +38,7 @@ export default function TicketDetails({
   onCreateTicket,
   currentUser,
 }) {
+  const { t } = useTranslation();
   const fileInputRef = useRef(null);
 
   /* ======================
@@ -49,10 +50,12 @@ export default function TicketDetails({
         <div className="flex flex-col items-center space-y-3">
           <MessageSquare className="w-16 h-16 text-gray-300 mb-4" />
 
-          <h4 className="text-gray-900 mb-2">Selecione um Chamado</h4>
+          <h4 className="text-gray-900 mb-2">
+            {t("support.ticketDetails.selectTicket")}
+          </h4>
 
           <p className="text-sm text-gray-500 mb-6">
-            Escolha um chamado ao lado para ver os detalhes
+            {t("support.ticketDetails.selectTicketText")}
           </p>
 
           <NewTicketDialog
@@ -60,7 +63,7 @@ export default function TicketDetails({
             trigger={
               <Button className="bg-blue-600 text-white hover:bg-blue-700">
                 <Plus className="w-4 h-4 mr-2" />
-                Abrir Novo Chamado
+                {t("support.ticketDetails.openNewTicket")}
               </Button>
             }
           />
@@ -76,17 +79,21 @@ export default function TicketDetails({
     switch (priority) {
       case SUPPORT_PRIORITY.HIGH:
         return (
-          <Badge className="bg-red-100 text-red-700">Alta Prioridade</Badge>
+          <Badge className="bg-red-100 text-red-700">
+            {t("support.ticketDetails.priority.high")}
+          </Badge>
         );
       case SUPPORT_PRIORITY.MEDIUM:
         return (
           <Badge className="bg-yellow-100 text-yellow-700">
-            Média Prioridade
+            {t("support.ticketDetails.priority.medium")}
           </Badge>
         );
       default:
         return (
-          <Badge className="bg-gray-100 text-gray-700">Baixa Prioridade</Badge>
+          <Badge className="bg-gray-100 text-gray-700">
+            {t("support.ticketDetails.priority.low")}
+          </Badge>
         );
     }
   };
@@ -94,11 +101,23 @@ export default function TicketDetails({
   const renderStatusBadge = (status) => {
     switch (status) {
       case SUPPORT_STATUS.OPEN:
-        return <Badge variant="ticketOpen">Aberto</Badge>;
+        return (
+          <Badge variant="ticketOpen">
+            {t("support.ticketDetails.status.open")}
+          </Badge>
+        );
       case SUPPORT_STATUS.PROGRESS:
-        return <Badge variant="ticketProgress">Em andamento</Badge>;
+        return (
+          <Badge variant="ticketProgress">
+            {t("support.ticketDetails.status.inProgress")}
+          </Badge>
+        );
       default:
-        return <Badge variant="ticketResolved">Resolvido</Badge>;
+        return (
+          <Badge variant="ticketResolved">
+            {t("support.ticketDetails.status.resolved")}
+          </Badge>
+        );
     }
   };
 
@@ -119,9 +138,15 @@ export default function TicketDetails({
           <h3 className="text-gray-900 mb-1">{ticket.title}</h3>
 
           <div className="flex items-center gap-3 text-sm text-gray-500">
-            <span>Criado em {formatDate(ticket.createdAt)}</span>
+            <span>
+              {t("support.ticketDetails.createdAt")}{" "}
+              {formatDate(ticket.createdAt)}
+            </span>
             <span>•</span>
-            <span>Atualizado {formatDate(ticket.updatedAt)}</span>
+            <span>
+              {t("support.ticketDetails.updatedAt")}{" "}
+              {formatDate(ticket.updatedAt)}
+            </span>
           </div>
         </div>
 
@@ -130,22 +155,22 @@ export default function TicketDetails({
 
       {/* CONVERSAÇÃO */}
       <div className="flex-1 mb-6">
-        <h4 className="text-gray-900 mb-4">Conversação</h4>
+        <h4 className="text-gray-900 mb-4">
+          {t("support.ticketDetails.conversation")}
+        </h4>
 
         <div className="space-y-4 max-h-[480px] overflow-y-auto pr-2">
           {ticket.messages?.length === 0 && (
             <p className="text-sm text-gray-500 text-center py-6">
-              Nenhuma mensagem ainda
+              {t("support.ticketDetails.noMessages")}
             </p>
           )}
 
           {ticket.messages?.map((message) => {
             const isSupport = message.isSupport;
-
             const senderName = isSupport
-              ? message.senderName || "Suporte"
-              : currentUser?.name || "Você";
-
+              ? message.senderName || t("support.ticketDetails.support")
+              : currentUser?.name || t("support.ticketDetails.you");
             const initials = senderName
               .split(" ")
               .map((n) => n[0])
@@ -158,7 +183,6 @@ export default function TicketDetails({
                 key={message.id}
                 className={`flex gap-3 ${isSupport ? "" : "flex-row-reverse"}`}
               >
-                {/* AVATAR */}
                 <Avatar
                   className={`w-10 h-10 ${
                     isSupport
@@ -185,14 +209,12 @@ export default function TicketDetails({
                       <span className="text-sm text-gray-900">
                         {senderName}
                       </span>
-
-                      {/* ROLE APENAS PARA SUPORTE */}
                       {isSupport && (
                         <Badge
                           variant="outline"
                           className="text-xs border-blue-200 text-blue-600"
                         >
-                          Suporte
+                          {t("support.ticketDetails.support")}
                         </Badge>
                       )}
                     </div>
@@ -200,7 +222,6 @@ export default function TicketDetails({
                     <p className="text-sm text-gray-700 mb-2">
                       {message.message}
                     </p>
-
                     <span className="text-xs text-gray-500">
                       {formatDate(message.createdAt)}
                     </span>
@@ -215,10 +236,12 @@ export default function TicketDetails({
       {/* RESPONDER */}
       {ticket.status !== SUPPORT_STATUS.RESOLVED ? (
         <div className="pt-6 border-t border-gray-200">
-          <Label className="block mb-2">Adicionar Resposta</Label>
+          <Label className="block mb-2">
+            {t("support.ticketDetails.addReply")}
+          </Label>
 
           <Textarea
-            placeholder="Digite sua mensagem..."
+            placeholder={t("support.ticketDetails.typeMessage")}
             value={newMessage}
             onChange={(e) => onChange(e.target.value)}
             className="min-h-[90px]"
@@ -239,7 +262,7 @@ export default function TicketDetails({
               onClick={() => fileInputRef.current?.click()}
             >
               <Paperclip className="w-4 h-4 mr-2" />
-              Anexar Arquivo
+              {t("support.ticketDetails.attachFile")}
             </Button>
 
             <Button
@@ -248,7 +271,7 @@ export default function TicketDetails({
               disabled={!newMessage.trim()}
             >
               <Send className="w-4 h-4 mr-2" />
-              Enviar Resposta
+              {t("support.ticketDetails.sendReply")}
             </Button>
           </div>
         </div>
@@ -256,7 +279,9 @@ export default function TicketDetails({
         <div className="pt-6 border-t border-gray-200">
           <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-center">
             <CheckCircle className="w-8 h-8 text-green-600 mx-auto mb-2" />
-            <p className="text-sm text-green-800">Este chamado foi resolvido</p>
+            <p className="text-sm text-green-800">
+              {t("support.ticketDetails.ticketResolved")}
+            </p>
           </div>
         </div>
       )}

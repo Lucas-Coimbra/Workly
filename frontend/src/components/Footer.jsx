@@ -1,4 +1,8 @@
+import { useTranslation } from "react-i18next";
+
 export default function Footer() {
+  const { t } = useTranslation();
+
   return (
     <footer className="bg-slate-800 text-slate-200">
       <div className="max-w-7xl mx-auto px-8 py-12">
@@ -21,28 +25,28 @@ export default function Footer() {
               <h3 className="text-lg font-semibold">Workly</h3>
             </div>
             <p className="text-sm md:text-base text-slate-400 leading-relaxed">
-              Gestão de espaços de coworking de forma simples e eficiente.
+              {t("footer.description")}
             </p>
           </div>
 
           <div>
             <h4 className="text-white font-semibold mb-3 text-sm md:text-base">
-              Links
+              {t("footer.links.title")}
             </h4>
             <ul className="flex flex-col gap-2 text-sm md:text-base">
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  Sobre Nós
+                  {t("footer.links.about")}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  Planos
+                  {t("footer.links.plans")}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  Contato
+                  {t("footer.links.contact")}
                 </a>
               </li>
             </ul>
@@ -50,17 +54,17 @@ export default function Footer() {
 
           <div>
             <h4 className="text-white font-semibold mb-3 text-sm md:text-base">
-              Suporte
+              {t("footer.support.title")}
             </h4>
             <ul className="flex flex-col gap-2 text-sm md:text-base">
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  FAQ
+                  {t("footer.support.faq")}
                 </a>
               </li>
               <li>
                 <a href="#" className="hover:text-white transition-colors">
-                  Ajuda
+                  {t("footer.support.help")}
                 </a>
               </li>
             </ul>
@@ -68,24 +72,24 @@ export default function Footer() {
 
           <div>
             <h4 className="text-white font-semibold mb-3 text-sm md:text-base">
-              Contato
+              {t("footer.contact.title")}
             </h4>
             <p className="text-sm md:text-base text-slate-400">
-              contato@workly.com.br <br />
-              (11) 3000-0000
+              {t("footer.contact.email")} <br />
+              {t("footer.contact.phone")}
             </p>
           </div>
         </div>
 
         <div className="mt-8 pt-6 border-t border-slate-700 flex flex-col sm:flex-row items-center justify-between text-xs sm:text-sm text-slate-400 gap-2 text-center sm:text-left">
-          <p>© 2025 Workly. Todos os direitos reservados.</p>
+          <p>{t("footer.rights")}</p>
           <div className="flex gap-3 justify-center sm:justify-start">
             <a href="#" className="hover:text-white transition-colors">
-              Termos
+              {t("footer.terms")}
             </a>
             <span>•</span>
             <a href="#" className="hover:text-white transition-colors">
-              Privacidade
+              {t("footer.privacy")}
             </a>
           </div>
         </div>

@@ -32,7 +32,9 @@ export function useNotifications() {
   // 🔹 Marcar uma como lida (optimistic)
   const markRead = async (id) => {
     setNotifications((prev) =>
-      prev.map((n) => (n.id === id ? { ...n, read: true } : n))
+      prev.map((n) =>
+        n.id === id ? { ...n, readAt: new Date().toISOString() } : n
+      )
     );
 
     setUnreadCount((c) => Math.max(c - 1, 0));
@@ -47,7 +49,12 @@ export function useNotifications() {
 
   // 🔹 Marcar todas como lidas
   const markAll = async () => {
-    setNotifications((prev) => prev.map((n) => ({ ...n, read: true })));
+    setNotifications((prev) =>
+      prev.map((n) => ({
+        ...n,
+        readAt: n.readAt || new Date().toISOString(),
+      }))
+    );
     setUnreadCount(0);
 
     try {
@@ -63,7 +70,7 @@ export function useNotifications() {
 
     setNotifications((prev) => prev.filter((n) => n.id !== id));
 
-    if (removed && !removed.read) {
+    if (removed && !removed.readAt) {
       setUnreadCount((c) => Math.max(c - 1, 0));
     }
 

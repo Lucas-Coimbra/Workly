@@ -120,12 +120,12 @@ export default function Reservations({ onLogout, onReserve }) {
                 </p>
               </div>
 
-              <div className="text-right">
-                <div className="text-sm text-blue-100">
-                  Créditos Disponíveis
-                </div>
-                <div className="text-xl font-semibold">R$ 350,00</div>
-              </div>
+              <button
+                onClick={() => navigate("/my-reservations")}
+                className="px-4 py-2 bg-white/10 hover:bg-white/20 rounded-md text-sm font-medium transition"
+              >
+                Minhas Reservas
+              </button>
             </div>
           </Card>
 

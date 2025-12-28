@@ -48,7 +48,10 @@ exports.errorHandler = (err, req, res, next) => {
   // Zod validation errors
   if (err && err.name === "ZodError") {
     status = 400;
-    message = err.errors
+
+    const issues = err.errors || err.issues || [];
+
+    message = issues
       .map((e) => {
         const path =
           Array.isArray(e.path) && e.path.length ? e.path.join(".") : "";

@@ -1,70 +1,123 @@
 const prisma = require("../config/prisma");
-const { createNotification } = require("./notificationService");
 
-async function createReservation({ userId, roomId, date, startTime, endTime }) {
-  // Check double booking: same room overlapping
-  const overlapping = await prisma.reservation.findFirst({
-    where: {
-      roomId,
-      OR: [
-        {
-          AND: [
-            { startTime: { lte: new Date(endTime) } },
-            { endTime: { gte: new Date(startTime) } },
-          ],
-        },
-      ],
-    },
-  });
-  if (overlapping) throw { status: 409, message: "Time slot already booked" };
-
-  const reservation = await prisma.reservation.create({
-    data: {
+class ReservationService {
+  async create(data) {
+    const {
       userId,
-      roomId,
-      date: new Date(date),
-      startTime: new Date(startTime),
-      endTime: new Date(endTime),
-      paid: false,
-    },
-  });
+      workspaceId,
+      date,
+      startTime,
+      endTime,
+      endDate,
+      paymentType,
+      total,
+    } = data;
 
-  await createNotification({
-    userId,
-    title: "Reserva confirmada",
-    message: "Sua reserva foi criada com sucesso.",
-    type: "SUCCESS",
-  });
+    // 1. Verifica se workspace existe
+    const workspace = await prisma.workspace.findUnique({
+      where: { id: workspaceId },
+    });
+    if (!workspace) throw new Error("Workspace não encontrado");
 
-  return reservation;
+    // 2. Checa disponibilidade
+    const conflicts = await prisma.reservation.findMany({
+      where: {
+        workspaceId,
+        status: "CONFIRMED",
+        OR: [
+          {
+            date: {
+              lte: endDate || date,
+            },
+            endDate: {
+              gte: date,
+            },
+          },
+          {
+            AND: [
+              { date: date },
+              { startTime: { lte: endTime } },
+              { endTime: { gte: startTime } },
+            ],
+          },
+        ],
+      },
+    });
+
+    if (conflicts.length > 0) {
+      throw new Error("Workspace indisponível no período escolhido");
+    }
+
+    // 3. Cria a reserva
+    const reservation = await prisma.reservation.create({
+      data: {
+        userId,
+        workspaceId,
+        date,
+        startTime: startTime || null,
+        endTime: endTime || null,
+        endDate: endDate || null,
+        paymentType,
+        total,
+        status: "PENDING",
+        paid: false,
+      },
+    });
+
+    return reservation;
+  }
+
+  async listByUser(userId) {
+    return prisma.reservation.findMany({
+      where: { userId },
+      include: { workspace: true },
+      orderBy: { date: "desc" },
+    });
+  }
+
+  async listByWorkspace(workspaceId) {
+    return prisma.reservation.findMany({
+      where: { workspaceId },
+      include: { user: true },
+      orderBy: { date: "desc" },
+    });
+  }
+
+  async markPaid(reservationId) {
+    return prisma.reservation.update({
+      where: { id: reservationId },
+      data: {
+        paid: true,
+        status: "CONFIRMED",
+      },
+    });
+  }
+
+  async cancel(reservationId, userId, role) {
+    const reservation = await prisma.reservation.findUnique({
+      where: { id: reservationId },
+    });
+
+    if (!reservation) {
+      throw new Error("Reserva não encontrada");
+    }
+
+    if (reservation.status === "CANCELED") {
+      throw new Error("Reserva já cancelada");
+    }
+
+    // MEMBER só pode cancelar a própria reserva
+    if (role === "MEMBER" && reservation.userId !== userId) {
+      throw new Error("Você não pode cancelar esta reserva");
+    }
+
+    return prisma.reservation.update({
+      where: { id: reservationId },
+      data: {
+        status: "CANCELED",
+      },
+    });
+  }
 }
 
-async function getReservation(id) {
-  return prisma.reservation.findUnique({ where: { id } });
-}
-
-async function listReservationsForUser(userId) {
-  return prisma.reservation.findMany({ where: { userId } });
-}
-
-async function cancelReservation(id) {
-  const reservation = await prisma.reservation.delete({
-    where: { id },
-  });
-
-  await createNotification({
-    userId: reservation.userId,
-    title: "Reserva cancelada",
-    message: "Sua reserva foi cancelada.",
-    type: "WARNING",
-  });
-
-  return reservation;
-}
-
-module.exports = {
-  createReservation,
-  getReservation,
-  listReservationsForUser,
-  cancelReservation,
-};
+module.exports = new ReservationService();

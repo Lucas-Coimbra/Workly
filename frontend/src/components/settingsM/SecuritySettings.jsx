@@ -1,10 +1,10 @@
 import { Card, Label, Input, Button } from "@/components/ui";
 import { Lock, Shield, Eye, EyeOff } from "lucide-react";
 import ToggleSwitch from "../ToggleSwitch";
+import { useTranslation } from "react-i18next";
 
 export default function SecuritySettings({
   twoFactorAuth,
-  setTwoFactorAuth,
   currentPassword,
   setCurrentPassword,
   newPassword,
@@ -18,32 +18,35 @@ export default function SecuritySettings({
   showConfirmPassword,
   setShowConfirmPassword,
   handleChangePassword,
+  onToggleTwoFA,
 }) {
+  const { t } = useTranslation();
+
   const passwordFields = [
     {
-      label: "Senha Atual",
+      label: t("security.password.currentLabel"),
       value: currentPassword,
       setter: setCurrentPassword,
       show: showCurrentPassword,
       setShow: setShowCurrentPassword,
-      placeholder: "Digite sua senha atual",
+      placeholder: t("security.password.currentPlaceholder"),
     },
     {
-      label: "Nova Senha",
+      label: t("security.password.newLabel"),
       value: newPassword,
       setter: setNewPassword,
       show: showNewPassword,
       setShow: setShowNewPassword,
-      placeholder: "Digite sua nova senha",
-      note: "Mínimo de 8 caracteres",
+      placeholder: t("security.password.newPlaceholder"),
+      note: t("security.password.note"),
     },
     {
-      label: "Confirmar Nova Senha",
+      label: t("security.password.confirmLabel"),
       value: confirmPassword,
       setter: setConfirmPassword,
       show: showConfirmPassword,
       setShow: setShowConfirmPassword,
-      placeholder: "Confirme sua nova senha",
+      placeholder: t("security.password.confirmPlaceholder"),
     },
   ];
 
@@ -55,34 +58,32 @@ export default function SecuritySettings({
           <Lock className="w-5 h-5 text-green-600" />
         </div>
         <div>
-          <h2 className="text-gray-900">Segurança</h2>
-          <p className="text-sm text-gray-600">Proteja sua conta</p>
+          <h2 className="text-gray-900">{t("security.title")}</h2>
+          <p className="text-sm text-gray-600">{t("security.description")}</p>
         </div>
       </div>
 
       <div className="space-y-6">
-        {/* Autenticação de Dois Fatores */}
+        {/* Two-Factor Auth */}
         <div className="flex items-center justify-between p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <div className="flex items-center gap-3">
             <Shield className="w-5 h-5 text-blue-600" />
             <div>
               <Label className="text-gray-900">
-                Autenticação de Dois Fatores
+                {t("security.twoFactorAuth.label")}
               </Label>
               <p className="text-sm text-gray-600">
-                Adicione uma camada extra de segurança
+                {t("security.twoFactorAuth.description")}
               </p>
             </div>
           </div>
 
-          {/* ToggleSwitch Component */}
-          <ToggleSwitch isChecked={twoFactorAuth} onChange={setTwoFactorAuth} />
+          <ToggleSwitch isChecked={twoFactorAuth} onChange={onToggleTwoFA} />
         </div>
 
-        {/* Separador */}
         <div className="border-t border-gray-200"></div>
 
-        {/* Alterar Senha */}
+        {/* Change Password */}
         <div className="space-y-4">
           {passwordFields.map((f, i) => (
             <div key={i}>
@@ -115,7 +116,7 @@ export default function SecuritySettings({
             className="w-full mt-4 bg-green-600 hover:bg-green-700"
             onClick={handleChangePassword}
           >
-            Alterar Senha
+            {t("security.password.changeButton")}
           </Button>
         </div>
       </div>

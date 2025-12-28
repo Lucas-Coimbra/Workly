@@ -2,7 +2,6 @@
 export const languages = [
   { label: "Português (Brasil)", value: "pt-BR" },
   { label: "English (US)", value: "en-US" },
-  { label: "Español", value: "es-ES" },
 ];
 
 export const timezones = [
@@ -16,9 +15,4 @@ export const currencies = [
   { label: "Real (R$)", value: "BRL" },
   { label: "Dollar ($)", value: "USD" },
   { label: "Euro (€)", value: "EUR" },
-];
-
-export const mockCards = [
-  { brand: "Visa", last4: "4532", expiry: "12/25" },
-  { brand: "Mastercard", last4: "8765", expiry: "08/26" },
 ];
