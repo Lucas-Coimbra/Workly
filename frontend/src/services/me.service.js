@@ -5,10 +5,17 @@ import { api } from "./api";
  * GET
  * =========================
  */
-export async function getMe() {
-  const res = await api.get("/me");
-  return res.data;
-}
+export const getMe = async () => {
+  try {
+    const { data } = await api.get("/me");
+    return data;
+  } catch (err) {
+    if (err.response?.status === 401) {
+      return null; // usuário não autenticado
+    }
+    throw err;
+  }
+};
 
 /**
  * =========================

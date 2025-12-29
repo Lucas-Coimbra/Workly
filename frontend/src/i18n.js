@@ -241,6 +241,7 @@ const resources = {
             category: "Categoria",
             categoryPlaceholder: "Selecione",
             priority: "Prioridade",
+            priorityPlaceholder: "Selecione",
             description: "Descrição",
             descriptionPlaceholder:
               "Descreva com detalhes o que está acontecendo...",
@@ -502,6 +503,7 @@ const resources = {
             category: "Category",
             categoryPlaceholder: "Select",
             priority: "Priority",
+            priorityPlaceholder: "Select",
             description: "Description",
             descriptionPlaceholder: "Describe in detail what is happening...",
           },

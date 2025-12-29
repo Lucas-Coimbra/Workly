@@ -35,7 +35,7 @@ router.patch(
 );
 
 router.post(
-  "/",
+  "/delete",
   verifyToken,
   validateSchema(deleteAccountSchema),
   meController.deleteAccount

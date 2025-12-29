@@ -4,6 +4,8 @@ const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 const { createNotification } = require("./notificationService");
 const twoFAService = require("./twoFAService");
+const emailService = require("./emailService");
+const passwordResetTemplate = require("../templates/passwordReset");
 
 async function register({ name, email, password, phone }) {
   const existing = await prisma.user.findUnique({
@@ -103,12 +105,32 @@ async function login({ email, password }) {
 }
 
 async function forgotPassword(email) {
+  // limpa tokens expirados
+  await prisma.passwordResetToken.deleteMany({
+    where: {
+      expiresAt: {
+        lt: new Date(),
+      },
+    },
+  });
+
   const user = await prisma.user.findUnique({
     where: { email },
   });
 
   // Segurança: não revela se existe
   if (!user) return;
+
+  // invalida tokens antigos
+  await prisma.passwordResetToken.updateMany({
+    where: {
+      userId: user.id,
+      used: false,
+    },
+    data: {
+      used: true,
+    },
+  });
 
   const token = crypto.randomBytes(32).toString("hex");
 
@@ -120,20 +142,34 @@ async function forgotPassword(email) {
     },
   });
 
-  // 🔜 Envio de email entra aqui
-  console.log(
-    `🔐 Link de recuperação: http://localhost:5173/reset-password?token=${token}`
-  );
+  const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`;
+
+  // email com template HTML
+  await emailService.sendMail({
+    to: user.email,
+    subject: "Redefinição de senha – Workly",
+    html: passwordResetTemplate({
+      name: user.name,
+      resetLink,
+    }),
+  });
 }
 
 async function resetPassword(token, newPassword) {
   const record = await prisma.passwordResetToken.findUnique({
     where: { token },
-    include: { user: true },
   });
 
-  if (!record || record.used || record.expiresAt < new Date()) {
-    throw new Error("Token inválido ou expirado");
+  if (!record) {
+    throw { status: 400, message: "Token inválido" };
+  }
+
+  if (record.used) {
+    throw { status: 400, message: "Token já utilizado" };
+  }
+
+  if (record.expiresAt < new Date()) {
+    throw { status: 400, message: "Token expirado" };
   }
 
   const hashed = await bcrypt.hash(newPassword, 10);
@@ -144,8 +180,15 @@ async function resetPassword(token, newPassword) {
       data: { password: hashed },
     }),
     prisma.passwordResetToken.update({
-      where: { token },
+      where: { id: record.id },
       data: { used: true },
+    }),
+    // 🔥 limpa outros tokens
+    prisma.passwordResetToken.deleteMany({
+      where: {
+        userId: record.userId,
+        used: true,
+      },
     }),
   ]);
 

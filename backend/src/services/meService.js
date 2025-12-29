@@ -3,7 +3,12 @@ const prisma = new PrismaClient();
 const bcrypt = require("bcryptjs");
 
 async function getMe(userId) {
-  // garante que o userSettings exista
+  // primeiro garante que o usuário existe
+  const userExists = await prisma.user.findUnique({ where: { id: userId } });
+  if (!userExists) {
+    throw new Error("USER_NOT_FOUND"); // ou retornar null, dependendo do controller
+  }
+
   await prisma.userSettings.upsert({
     where: { userId },
     update: {},
@@ -19,16 +24,7 @@ async function getMe(userId) {
       phone: true,
       role: true,
       createdAt: true,
-
-      plan: {
-        select: {
-          name: true,
-          price: true,
-          monthlyHours: true,
-        },
-      },
-
-      // 👇 NOVO
+      plan: { select: { name: true, price: true, monthlyHours: true } },
       settings: {
         select: {
           emailNotifications: true,
@@ -42,7 +38,6 @@ async function getMe(userId) {
           twoFactorAuth: true,
         },
       },
-
       notifications: {
         orderBy: { createdAt: "desc" },
         select: {
@@ -136,6 +131,7 @@ async function updateSecurity(userId, data) {
 }
 
 async function deleteAccount(userId, password) {
+  // Busca o usuário
   const user = await prisma.user.findUnique({
     where: { id: userId },
   });
@@ -146,6 +142,7 @@ async function deleteAccount(userId, password) {
     throw err;
   }
 
+  // Verifica a senha
   const valid = await bcrypt.compare(password, user.password);
   if (!valid) {
     const err = new Error("Senha incorreta");
@@ -153,10 +150,18 @@ async function deleteAccount(userId, password) {
     throw err;
   }
 
-  await prisma.user.delete({
-    where: { id: userId },
+  // Transação para deletar tudo de uma vez
+  await prisma.$transaction(async (tx) => {
+    // deleta registros dependentes primeiro
+    await tx.userSettings.deleteMany({ where: { userId } });
+    await tx.passwordResetToken.deleteMany({ where: { userId } });
+
+    // depois deleta o usuário
+    await tx.user.delete({ where: { id: userId } });
   });
 }
+
+module.exports = { deleteAccount };
 
 module.exports = {
   getMe,

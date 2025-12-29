@@ -5,6 +5,7 @@ import {
   updateSecuritySettings,
   deleteMe,
 } from "../services/me.service";
+import { useAuth } from "../hooks/useAuth";
 
 import { useState, useEffect, useRef } from "react";
 import Header from "../components/Header";
@@ -25,7 +26,7 @@ import i18n from "../i18n";
 export default function MemberSettings({ onLogout }) {
   const navigate = useNavigate();
   const { t } = useTranslation();
-
+  const { logout, user } = useAuth();
   // ================== NOTIFICATIONS ==================
   const [emailNotifications, setEmailNotifications] = useState(null);
   const [smsNotifications, setSmsNotifications] = useState(null);
@@ -70,6 +71,11 @@ export default function MemberSettings({ onLogout }) {
 
   // ================== LOAD USER ==================
   useEffect(() => {
+    if (!user) {
+      setSettingsLoading(false);
+      return;
+    }
+
     async function loadMe() {
       try {
         const me = await getMe();
@@ -94,7 +100,7 @@ export default function MemberSettings({ onLogout }) {
     }
 
     loadMe();
-  }, [t]);
+  }, [user, t]);
 
   // ================== HELPERS ==================
   const showError = (message, timeout = 4000) => {
@@ -186,11 +192,12 @@ export default function MemberSettings({ onLogout }) {
 
     try {
       await deleteMe(password);
-      await onLogout();
-      navigate("/login");
+      await logout(); // Limpa AuthProvider e token
     } catch (err) {
       setDeleteError(
-        err?.response?.data?.message || t("errors.incorrectPassword")
+        err?.response?.data?.message ||
+          err.message ||
+          t("errors.incorrectPassword")
       );
     } finally {
       setDeleting(false);

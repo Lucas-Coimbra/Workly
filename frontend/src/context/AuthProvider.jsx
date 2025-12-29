@@ -46,13 +46,11 @@ export function AuthProvider({ children }) {
   const login = useCallback(async (email, password) => {
     const data = await loginRequest(email, password);
 
-    // 🛑 Login com 2FA → não autentica ainda
     if (data.twoFAEnabled) {
       setTempToken(data.tempToken);
       return { requires2FA: true };
     }
 
-    // ✅ Login normal
     localStorage.setItem("authToken", data.token);
     api.defaults.headers.common.Authorization = `Bearer ${data.token}`;
     setToken(data.token);
@@ -66,9 +64,7 @@ export function AuthProvider({ children }) {
   // 🔑 confirmar 2FA
   const verify2FA = useCallback(
     async (code) => {
-      if (!tempToken) {
-        throw new Error("Token temporário inexistente");
-      }
+      if (!tempToken) throw new Error("Token temporário inexistente");
 
       const data = await verify2FARequest(tempToken, code);
 
@@ -87,7 +83,11 @@ export function AuthProvider({ children }) {
 
   // 🚪 logout
   const logout = useCallback(async () => {
-    await logoutRequest();
+    try {
+      await logoutRequest();
+    } catch {
+      // ignorar erros de logout
+    }
     setUser(null);
     setToken(null);
     setTempToken(null);

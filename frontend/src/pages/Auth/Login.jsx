@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
+
 import ReCAPTCHA from "../../components/ReCAPTCHA";
 import { useAuth } from "../../hooks/useAuth";
 import LayoutAuth from "../../components/LayoutAuth";
@@ -37,7 +39,7 @@ export default function Login() {
     event.preventDefault();
 
     if (!captchaVerified) {
-      alert("Por favor, verifique o reCAPTCHA");
+      toast.error("Confirme que você não é um robô.");
       return;
     }
 
@@ -46,16 +48,17 @@ export default function Login() {
     try {
       const result = await login(email, password);
 
-      // 🔐 exige 2FA → só abre o modal
+      // 🔐 Exige 2FA
       if (result.requires2FA) {
+        toast("Digite o código de verificação 🔐");
         setShow2FAModal(true);
         return;
       }
 
-      // ✅ login direto
+      toast.success("Login realizado com sucesso!");
       handleRedirect(result.user.role);
     } catch (err) {
-      alert(err?.message || "Erro ao fazer login");
+      toast.error(parseLoginError(err));
     } finally {
       setLoading(false);
     }
@@ -70,6 +73,7 @@ export default function Login() {
       setShow2FAModal(false);
       setTwoFAError("");
 
+      toast.success("Verificação concluída!");
       handleRedirect(verifiedData.role);
     } catch {
       setTwoFAError("Código inválido. Tente novamente.");
@@ -104,11 +108,13 @@ export default function Login() {
     try {
       const result = await login(creds.email, creds.password);
 
-      if (result.twoFAEnabled) {
+      if (result.requires2FA) {
+        toast("Digite o código 2FA 🔐");
         setShow2FAModal(true);
         return;
       }
 
+      toast.success("Login rápido realizado!");
       handleRedirect(result.user.role);
     } finally {
       setLoading(false);
@@ -119,6 +125,10 @@ export default function Login() {
     <LayoutAuth
       title="Bem-vindo de volta"
       subtitle="Entre com sua conta para continuar"
+      backButton={{
+        label: "Voltar para a página inicial",
+        onClick: () => navigate("/"),
+      }}
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Email */}
@@ -151,13 +161,10 @@ export default function Login() {
           </div>
         </div>
 
-        {/* Lembrar-me / Esqueceu a senha */}
+        {/* Lembrar-me / Esqueceu */}
         <div className="flex justify-between items-center text-sm text-gray-600">
           <label className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              className="h-4 w-4 text-blue-600 rounded border-gray-300"
-            />
+            <input type="checkbox" className="h-4 w-4" />
             Lembrar-me
           </label>
           <button
@@ -169,53 +176,36 @@ export default function Login() {
           </button>
         </div>
 
-        {/* reCAPTCHA */}
         <ReCAPTCHA onVerify={setCaptchaVerified} />
 
-        {/* Botão Entrar */}
         <button
           type="submit"
           disabled={loading}
-          className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition disabled:opacity-50"
+          className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50"
         >
           {loading ? "Entrando..." : "Entrar"}
         </button>
 
-        {/* Quick Demo */}
         {import.meta.env.DEV && (
-          <div className="mt-4 space-y-2 text-center">
-            <p className="text-gray-500 text-sm">Acesso rápido (demo):</p>
+          <div className="mt-4 text-center space-y-2">
+            <p className="text-sm text-gray-500">Acesso rápido (demo):</p>
             <div className="flex justify-center gap-2 flex-wrap">
-              <button
-                type="button"
-                disabled={loading}
-                onClick={() => handleQuickLogin("MEMBER")}
-                className="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 transition"
-              >
-                Entrar como Membro
-              </button>
-              <button
-                type="button"
-                disabled={loading}
-                onClick={() => handleQuickLogin("ADMIN")}
-                className="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 transition"
-              >
-                Entrar como Admin
-              </button>
-              <button
-                type="button"
-                disabled={loading}
-                onClick={() => handleQuickLogin("SUPPORT")}
-                className="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200 transition"
-              >
-                Entrar como Suporte
-              </button>
+              {["MEMBER", "ADMIN", "SUPPORT"].map((role) => (
+                <button
+                  key={role}
+                  type="button"
+                  disabled={loading}
+                  onClick={() => handleQuickLogin(role)}
+                  className="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200"
+                >
+                  Entrar como {role}
+                </button>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Registro */}
-        <div className="mt-4 text-center text-gray-600 text-sm">
+        <div className="mt-4 text-center text-sm text-gray-600">
           Não tem uma conta?{" "}
           <button
             onClick={() => navigate("/register")}
@@ -226,7 +216,6 @@ export default function Login() {
         </div>
       </form>
 
-      {/* Modal 2FA */}
       {show2FAModal && (
         <Modal2FA
           open={show2FAModal}
@@ -241,4 +230,22 @@ export default function Login() {
       )}
     </LayoutAuth>
   );
+}
+
+/* =====================
+   Error Translator
+===================== */
+function parseLoginError(err) {
+  const code = err?.response?.data?.code;
+
+  switch (code) {
+    case "INVALID_CREDENTIALS":
+      return "Email ou senha incorretos.";
+    case "USER_BLOCKED":
+      return "Sua conta está bloqueada.";
+    case "TOO_MANY_ATTEMPTS":
+      return "Muitas tentativas. Aguarde alguns minutos.";
+    default:
+      return "Erro ao fazer login. Tente novamente.";
+  }
 }

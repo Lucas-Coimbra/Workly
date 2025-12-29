@@ -23,7 +23,10 @@ import { Send } from "lucide-react";
 import { SUPPORT_PRIORITY } from "../../constants/support.constants";
 
 export default function TicketDialog({ onSubmit, trigger, loading = false }) {
-  const { t } = useTranslation();
+  const { t } = useTranslation(undefined, {
+    keyPrefix: "support.ticketDialog",
+  });
+
   const [open, setOpen] = useState(false);
 
   const [title, setTitle] = useState("");
@@ -53,18 +56,16 @@ export default function TicketDialog({ onSubmit, trigger, loading = false }) {
 
       <DialogContent className="max-w-2xl bg-white border border-gray-200 shadow-xl rounded-2xl">
         <DialogHeader>
-          <DialogTitle>{t("ticketDialog.openTitle")}</DialogTitle>
-          <DialogDescription>
-            {t("ticketDialog.openDescription")}
-          </DialogDescription>
+          <DialogTitle>{t("openTitle")}</DialogTitle>
+          <DialogDescription>{t("openDescription")}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4">
           {/* Título */}
           <div>
-            <Label>{t("ticketDialog.fields.title")}</Label>
+            <Label>{t("fields.title")}</Label>
             <Input
-              placeholder={t("ticketDialog.fields.titlePlaceholder")}
+              placeholder={t("fields.titlePlaceholder")}
               className="mt-2 bg-gray-100 border-gray-300 focus:bg-white"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -74,50 +75,44 @@ export default function TicketDialog({ onSubmit, trigger, loading = false }) {
           {/* Categoria & Prioridade */}
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <Label>{t("ticketDialog.fields.category")}</Label>
+              <Label>{t("fields.category")}</Label>
               <Select value={category} onValueChange={setCategory}>
                 <SelectTrigger className="mt-2 bg-gray-100 border-gray-300 focus:bg-white">
-                  <SelectValue
-                    placeholder={t("ticketDialog.fields.categoryPlaceholder")}
-                  />
+                  <SelectValue placeholder={t("fields.categoryPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="technical">
-                    {t("ticketDialog.categories.technical")}
+                    {t("categories.technical")}
                   </SelectItem>
                   <SelectItem value="billing">
-                    {t("ticketDialog.categories.billing")}
+                    {t("categories.billing")}
                   </SelectItem>
                   <SelectItem value="reservation">
-                    {t("ticketDialog.categories.reservation")}
+                    {t("categories.reservation")}
                   </SelectItem>
-                  <SelectItem value="space">
-                    {t("ticketDialog.categories.space")}
-                  </SelectItem>
+                  <SelectItem value="space">{t("categories.space")}</SelectItem>
                   <SelectItem value="general">
-                    {t("ticketDialog.categories.general")}
+                    {t("categories.general")}
                   </SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div>
-              <Label>{t("ticketDialog.fields.priority")}</Label>
+              <Label>{t("fields.priority")}</Label>
               <Select value={priority} onValueChange={setPriority}>
                 <SelectTrigger className="mt-2 bg-gray-100 border-gray-300 focus:bg-white">
-                  <SelectValue
-                    placeholder={t("ticketDialog.fields.priority")}
-                  />
+                  <SelectValue placeholder={t("fields.priorityPlaceholder")} />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value={SUPPORT_PRIORITY.HIGH}>
-                    {t("ticketDialog.priorities.high")}
+                    {t("priorities.high")}
                   </SelectItem>
                   <SelectItem value={SUPPORT_PRIORITY.MEDIUM}>
-                    {t("ticketDialog.priorities.medium")}
+                    {t("priorities.medium")}
                   </SelectItem>
                   <SelectItem value={SUPPORT_PRIORITY.LOW}>
-                    {t("ticketDialog.priorities.low")}
+                    {t("priorities.low")}
                   </SelectItem>
                 </SelectContent>
               </Select>
@@ -126,9 +121,9 @@ export default function TicketDialog({ onSubmit, trigger, loading = false }) {
 
           {/* Descrição */}
           <div>
-            <Label>{t("ticketDialog.fields.description")}</Label>
+            <Label>{t("fields.description")}</Label>
             <Textarea
-              placeholder={t("ticketDialog.fields.descriptionPlaceholder")}
+              placeholder={t("fields.descriptionPlaceholder")}
               className="mt-2 min-h-[150px] bg-gray-100 border-gray-300 focus:bg-white"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -143,9 +138,7 @@ export default function TicketDialog({ onSubmit, trigger, loading = false }) {
               disabled={loading}
             >
               <Send className="w-4 h-4 mr-2" />
-              {loading
-                ? t("ticketDialog.actions.sending")
-                : t("ticketDialog.actions.sendTicket")}
+              {loading ? t("actions.sending") : t("actions.sendTicket")}
             </Button>
           </div>
         </div>

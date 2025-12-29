@@ -42,10 +42,7 @@ export default function ResetPassword() {
       setLoading(true);
       setError(null);
 
-      await resetPasswordRequest.post("/auth/reset-password", {
-        token,
-        password,
-      });
+      await resetPasswordRequest(token, password);
 
       setSuccess(true);
 
@@ -60,15 +57,20 @@ export default function ResetPassword() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-muted px-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>Redefinir senha</CardTitle>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-600 to-purple-600 p-4">
+      <Card className="w-full max-w-md shadow-xl bg-white/95 backdrop-blur">
+        <CardHeader className="text-center">
+          <CardTitle className="text-2xl font-semibold">
+            Redefinir senha
+          </CardTitle>
         </CardHeader>
+
         <CardContent>
           {success ? (
-            <p className="text-green-600">
-              Senha redefinida com sucesso. Redirecionando para o login...
+            <p className="text-green-600 text-center font-medium">
+              Senha redefinida com sucesso.
+              <br />
+              Redirecionando para o login...
             </p>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -88,7 +90,9 @@ export default function ResetPassword() {
                 required
               />
 
-              {error && <p className="text-sm text-red-500">{error}</p>}
+              {error && (
+                <p className="text-sm text-red-500 text-center">{error}</p>
+              )}
 
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? "Salvando..." : "Redefinir senha"}
