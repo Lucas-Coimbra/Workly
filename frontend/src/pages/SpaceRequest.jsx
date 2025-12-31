@@ -161,16 +161,13 @@ export default function SpaceRequest() {
       }
 
       // Preços (todos obrigatórios e >= 1)
-      if (!formData.pricePerHour || Number(formData.pricePerHour) < 1) {
-        newErrors.pricePerHour = "Informe o preço por hora";
-      }
-
-      if (!formData.pricePerDay || Number(formData.pricePerDay) < 1) {
-        newErrors.pricePerDay = "Informe o preço por dia";
-      }
-
-      if (!formData.pricePerMonth || Number(formData.pricePerMonth) < 1) {
-        newErrors.pricePerMonth = "Informe o preço mensal";
+      if (
+        !formData.pricePerHour &&
+        !formData.pricePerDay &&
+        !formData.pricePerMonth
+      ) {
+        newErrors.prices =
+          "Informe pelo menos um tipo de preço (hora, dia ou mensal)";
       }
 
       if (!formData.minimumBooking || Number(formData.minimumBooking) < 1) {

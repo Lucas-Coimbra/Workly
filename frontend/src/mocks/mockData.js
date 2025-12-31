@@ -1,18 +1,4 @@
 // Mock para página de cadastrar Reservas
-export const amenitiesList = [
-  { id: "wifi", name: "WiFi de Alta Velocidade", icon: "Wifi" },
-  { id: "coffee", name: "Café e Chá", icon: "Coffee" },
-  { id: "parking", name: "Estacionamento", icon: "Car" },
-  { id: "printer", name: "Impressora e Scanner", icon: "Printer" },
-  { id: "monitor", name: "Monitores Extras", icon: "Monitor" },
-  { id: "phone", name: "Telefone", icon: "Phone" },
-  { id: "ac", name: "Ar Condicionado", icon: "Home" },
-  { id: "kitchen", name: "Cozinha Equipada", icon: "Coffee" },
-  { id: "meeting", name: "Sala de Reunião", icon: "Users" },
-  { id: "locker", name: "Armários", icon: "Square" },
-  { id: "reception", name: "Recepção", icon: "User" },
-  { id: "24h", name: "Acesso 24h", icon: "Clock" },
-];
 
 export const spaceTypes = [
   "Escritório Privado",

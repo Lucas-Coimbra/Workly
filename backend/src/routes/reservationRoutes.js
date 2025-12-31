@@ -35,6 +35,9 @@ router.patch(
   reservationController.markPaid
 );
 
+// para usuário normal
+router.patch("/:id/pay-user", verifyToken, reservationController.userMarkPaid);
+
 // Cancelar reserva (MEMBER ou ADMIN)
 router.patch(
   "/:id/cancel",
@@ -42,5 +45,15 @@ router.patch(
   requireRole(["MEMBER", "ADMIN"]),
   reservationController.cancel
 );
+
+router.get(
+  "/:id",
+  verifyToken,
+  requireRole(["MEMBER", "ADMIN"]),
+  reservationController.getById
+);
+
+// Público (sem login)
+router.get("/availability", reservationController.availability);
 
 module.exports = router;

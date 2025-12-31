@@ -24,3 +24,36 @@ export const cancelReservation = async (id) => {
   const response = await api.patch(`/reservations/${id}/cancel`);
   return response.data;
 };
+
+export const getWorkspaceReservationModes = async (workspaceId) => {
+  const response = await api.get(
+    `/workspaces/${workspaceId}/reservation-modes`
+  );
+  return response.data;
+};
+
+export const getReservationAvailability = async ({
+  workspaceId,
+  date,
+  mode,
+}) => {
+  const response = await api.get("/reservations/availability", {
+    params: {
+      workspaceId,
+      date,
+      mode,
+    },
+  });
+
+  return response.data;
+};
+
+export const getReservationById = async (id) => {
+  const response = await api.get(`/reservations/${id}`);
+  return response.data;
+};
+
+export const markReservationPaidByUser = async (id) => {
+  const response = await api.patch(`/reservations/${id}/pay-user`);
+  return response.data;
+};

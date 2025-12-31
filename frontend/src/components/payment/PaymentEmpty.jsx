@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import { Card, Button } from "@/components/ui";
 import { MapPin } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 export default function PaymentEmpty() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-160px)] px-4">
@@ -12,17 +14,19 @@ export default function PaymentEmpty() {
           <MapPin className="w-8 h-8 text-orange-600" />
         </div>
 
-        <h2 className="text-gray-900 mb-2">Nenhuma Reserva Selecionada</h2>
+        <h2 className="text-gray-900 mb-2">
+          {t("PaymentEmpty.noReservation")}
+        </h2>
 
         <p className="text-gray-600 mb-6">
-          Para realizar um pagamento, você precisa primeiro fazer uma reserva.
+          {t("PaymentEmpty.noReservationDescription")}
         </p>
 
         <Button
           className="w-full bg-blue-600 hover:bg-blue-700"
-          onClick={() => navigate?.("/reservations")}
+          onClick={() => navigate("/reservations")}
         >
-          Fazer uma Reserva
+          {t("PaymentEmpty.makeReservation")}
         </Button>
       </Card>
     </div>

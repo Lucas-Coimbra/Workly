@@ -35,13 +35,16 @@ export default function MemberSettings({ onLogout }) {
   const [weeklyReport, setWeeklyReport] = useState(null);
 
   // ================== PREFERENCES ==================
-  const [language, setLanguage] = useState("pt-BR");
+  const [language, setLanguage] = useState(
+    localStorage.getItem("language") || "pt-BR"
+  );
   const [timezone, setTimezone] = useState("America/Sao_Paulo");
   const [currency, setCurrency] = useState("BRL");
 
   useEffect(() => {
     if (language) {
       i18n.changeLanguage(language);
+      localStorage.setItem("language", language);
     }
   }, [language]);
 

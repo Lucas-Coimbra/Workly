@@ -54,6 +54,12 @@ enum ReservationStatus {
   CANCELED
 }
 
+enum ReservationMode {
+  HOURLY
+  DAILY
+  MONTHLY
+}
+
 
 /**
  * ======================
@@ -108,8 +114,11 @@ model Plan {
 
 model Workspace {
   id          Int      @id @default(autoincrement())
+
   name        String
   description String?
+  spaceType   String
+
   email       String
   phone       String?
   address     String
@@ -125,10 +134,12 @@ model Workspace {
   totalArea       Int?
   capacity        Int?
   totalRooms      Int?
+
   pricePerHour    Float?
   pricePerDay     Float?
   pricePerMonth   Float?
   minimumBooking  Int?
+
   additionalInfo  String?
   amenities       String[]
   images          String[]
@@ -142,6 +153,7 @@ model Workspace {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
 
 model Room {
   id          Int      @id @default(autoincrement())
@@ -158,11 +170,15 @@ model Reservation {
   userId      Int
   workspaceId Int
 
-  date        DateTime
+  // Datas
+  date        DateTime   // data inicial
+  endDate     DateTime?  // data final (DAILY = igual à date)
+
+  // Horário (somente HOURLY)
   startTime   DateTime?
   endTime     DateTime?
-  endDate     DateTime?
-  paymentType PaymentType
+
+  mode        ReservationMode
   total       Float
 
   status      ReservationStatus @default(PENDING)
@@ -173,8 +189,12 @@ model Reservation {
 
   user      User      @relation(fields: [userId], references: [id])
   workspace Workspace @relation(fields: [workspaceId], references: [id])
-}
 
+  @@index([userId])
+  @@index([workspaceId])
+  @@index([workspaceId, status])
+  @@index([workspaceId, date])
+}
 
 model Notification {
   id        Int       @id @default(autoincrement())
@@ -224,7 +244,7 @@ model SupportMessage {
 
   createdAt DateTime @default(now())
 }
-
+ 
 model SpaceRequest {
   id Int @id @default(autoincrement())
 

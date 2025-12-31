@@ -8,8 +8,13 @@ async function getAllPlans() {
 }
 
 async function getPlanByName(name) {
-  return prisma.plan.findUnique({
-    where: { name },
+  return prisma.plan.findFirst({
+    where: {
+      name: {
+        equals: name,
+        mode: "insensitive", // ignora maiúsculas/minúsculas
+      },
+    },
   });
 }
 

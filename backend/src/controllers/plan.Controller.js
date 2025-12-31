@@ -14,7 +14,8 @@ async function getPlan(req, res) {
   try {
     const { name } = req.params;
 
-    const plan = await planService.getPlanByName(name.toUpperCase());
+    // não precisa forçar uppercase
+    const plan = await planService.getPlanByName(name);
 
     if (!plan) {
       return res.status(404).json({ message: "Plano não encontrado" });

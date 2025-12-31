@@ -15,8 +15,11 @@ import ResetPassword from "./pages/Auth/ResetPassword";
 import MemberDashboard from "./pages/MemberDashboard";
 import AdminDashboard from "./pages/AdminDashboard";
 import SupportDashboard from "./pages/SupportDashboard";
+
 import Reservations from "./pages/Reservations";
-import MyReservations from "./components/reservations/MyReservations";
+import MyReservations from "./pages/MyReservations";
+import ReservationDetails from "./components/reservations/ReservationDetails";
+
 import Payment from "./pages/Payment";
 import History from "./pages/History";
 import MemberSupport from "./pages/MemberSupport";
@@ -43,9 +46,12 @@ export default function App() {
           <Route path="/member-dashboard" element={<MemberDashboard />} />
           <Route path="/member-profile" element={<MemberProfile />} />
           <Route path="/member-settings" element={<MemberSettings />} />
+
           <Route path="/reservations" element={<Reservations />} />
           <Route path="/my-reservations" element={<MyReservations />} />
-          <Route path="/payment" element={<Payment />} />
+          <Route path="/my-reservations/:id" element={<ReservationDetails />} />
+          <Route path="/payment/" element={<Payment />} />
+          <Route path="/payment/:id" element={<Payment />} />
           <Route path="/history" element={<History />} />
           <Route path="/support" element={<MemberSupport />} />
         </Route>

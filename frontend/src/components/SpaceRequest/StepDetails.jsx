@@ -128,11 +128,16 @@ export default function StepDetails({
         <h3 className="text-[18px] font-[600] text-[#111827] mb-[20px]">
           Disponibilidade e Preços
         </h3>
+        {errors.prices && (
+          <p className="mb-[12px] text-[13px] text-[#dc2626]">
+            {errors.prices}
+          </p>
+        )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-[20px] mb-[20px]">
           <div>
             <label className="block text-[14px] font-[500] text-[#374151] mb-[6px]">
-              Preço por Hora (R$) <span className="text-[#dc2626]">*</span>
+              Preço por Hora (R$)
             </label>
             <input
               type="number"
@@ -150,7 +155,7 @@ export default function StepDetails({
 
           <div>
             <label className="block text-[14px] font-[500] text-[#374151] mb-[6px]">
-              Preço por Dia (R$) <span className="text-[#dc2626]">*</span>
+              Preço por Dia (R$)
             </label>
             <input
               type="number"
@@ -170,7 +175,7 @@ export default function StepDetails({
         <div className="grid grid-cols-1 md:grid-cols-2 gap-[20px] mb-[20px]">
           <div>
             <label className="block text-[14px] font-[500] text-[#374151] mb-[6px]">
-              Preço Mensal (R$) <span className="text-[#dc2626]">*</span>
+              Preço Mensal (R$)
             </label>
             <input
               type="number"

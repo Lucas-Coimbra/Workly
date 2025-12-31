@@ -5,4 +5,6 @@ const controller = require("../controllers/workspace.Controller");
 router.get("/", controller.list);
 router.get("/:id", controller.getById);
 
+router.get("/:id/reservation-modes", controller.reservationModes);
+
 module.exports = router;

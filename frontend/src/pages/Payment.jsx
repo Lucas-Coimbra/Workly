@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card, Button } from "@/components/ui";
 import { ArrowLeft } from "lucide-react";
 import Header from "../components/Header";
@@ -7,26 +7,87 @@ import PaymentEmpty from "../components/payment/PaymentEmpty";
 import PaymentSuccess from "../components/payment/PaymentSuccess";
 import PaymentMethodSelector from "../components/payment/PaymentMethodSelector";
 import PaymentSummary from "../components/payment/PaymentSummary";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+
+import {
+  getReservationById,
+  markReservationPaidByUser,
+} from "../services/reservation.service";
 
 export default function Payment({ onLogout }) {
   const navigate = useNavigate();
-  const location = useLocation();
-  const reservationData = location.state?.reservationData;
+  const { id } = useParams();
 
-  const computedTotal = reservationData
-    ? (() => {
-        const price = Number(reservationData.pricePerHour) || 0;
-        if (typeof reservationData.duration === "number")
-          return price * reservationData.duration;
-        const startStr = reservationData.startTime || "09:00";
-        const endStr = reservationData.endTime || "10:00";
-        const [sh] = startStr.split(":").map((n) => parseInt(n, 10) || 0);
-        const [eh] = endStr.split(":").map((n) => parseInt(n, 10) || 0);
-        const hours = Math.max(0.5, eh - sh || 1);
-        return price * hours;
-      })()
-    : 0;
+  const [reservationData, setReservationData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const [paymentMethod, setPaymentMethod] = useState("credit");
+  const [cardData, setCardData] = useState({
+    number: "",
+    name: "",
+    expiry: "",
+    cvv: "",
+  });
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
+
+  useEffect(() => {
+    async function fetchReservation() {
+      if (!id) {
+        setLoading(false); // Não há id, não precisa carregar reserva
+        return;
+      }
+
+      try {
+        const data = await getReservationById(id);
+        setReservationData({
+          ...data,
+          spaceName: data.workspace.name,
+          spaceType: data.mode,
+          workspaceAddress: data.workspace.address,
+          date: new Date(data.date).toLocaleDateString("pt-BR"),
+          startTime: data.startTime
+            ? new Date(data.startTime).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "",
+          endTime: data.endTime
+            ? new Date(data.endTime).toLocaleTimeString([], {
+                hour: "2-digit",
+                minute: "2-digit",
+              })
+            : "",
+          capacity: data.workspace.capacity || 1,
+          pricePerHour: data.workspace.pricePerHour || data.total,
+          duration: data.duration || 1,
+          total: data.total,
+        });
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchReservation();
+  }, [id]);
+
+  if (loading) return <p className="p-8">Carregando...</p>;
+
+  // safeReservation calculado antes de qualquer uso
+  const computedTotal = (() => {
+    const price = Number(reservationData?.pricePerHour) || 0;
+    if (typeof reservationData?.duration === "number")
+      return price * reservationData.duration;
+
+    const startStr = reservationData?.startTime || "09:00";
+    const endStr = reservationData?.endTime || "10:00";
+    const [sh] = startStr.split(":").map((n) => parseInt(n, 10) || 0);
+    const [eh] = endStr.split(":").map((n) => parseInt(n, 10) || 0);
+    const hours = Math.max(0.5, eh - sh || 1);
+    return price * hours;
+  })();
 
   const safeReservation = reservationData
     ? {
@@ -40,35 +101,7 @@ export default function Payment({ onLogout }) {
       }
     : null;
 
-  const [paymentMethod, setPaymentMethod] = useState("credit");
-  const [cardData, setCardData] = useState({
-    number: "",
-    name: "",
-    expiry: "",
-    cvv: "",
-  });
-
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [paymentSuccess, setPaymentSuccess] = useState(false);
-
-  const handlePayment = () => {
-    const needsCard = paymentMethod !== "pix";
-
-    if (
-      needsCard &&
-      (!cardData.number || !cardData.name || !cardData.expiry || !cardData.cvv)
-    ) {
-      return;
-    }
-
-    setIsProcessing(true);
-    setTimeout(() => {
-      setIsProcessing(false);
-      setPaymentSuccess(true);
-    }, 1200);
-  };
-
-  if (!safeReservation && !paymentSuccess)
+  if (!reservationData && !paymentSuccess)
     return (
       <div className="min-h-screen flex flex-col">
         <Header
@@ -91,9 +124,33 @@ export default function Payment({ onLogout }) {
           onLogout={onLogout}
           currentPage="payment"
         />
+        <PaymentSuccess safeReservation={safeReservation} />
         <Footer />
       </div>
     );
+
+  const handlePayment = async () => {
+    const needsCard = paymentMethod !== "pix";
+
+    if (
+      needsCard &&
+      (!cardData.number || !cardData.name || !cardData.expiry || !cardData.cvv)
+    ) {
+      return;
+    }
+
+    setIsProcessing(true);
+
+    try {
+      await markReservationPaidByUser(safeReservation.id);
+      setPaymentSuccess(true);
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao processar o pagamento.");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -110,10 +167,10 @@ export default function Payment({ onLogout }) {
             <Button
               variant="ghost"
               className="mb-6 flex items-center"
-              onClick={() => navigate("/reservations")}
+              onClick={() => navigate(-1)}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Voltar para Reservas
+              Voltar
             </Button>
           </div>
 

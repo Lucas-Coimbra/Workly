@@ -23,6 +23,30 @@ export default function PaymentSummary({
   const disabled =
     isProcessing || (paymentMethod !== "pix" && !cardFieldsValid);
 
+  // Rótulos amigáveis
+  const typeLabels = {
+    HOURLY: "Por Hora",
+    DAILY: "Diária",
+    MONTHLY: "Mensal",
+  };
+
+  // Determina se deve mostrar valores por hora
+  const showHourlyValues = safeReservation.spaceType === "HOURLY";
+
+  // Calcula duração corretamente se for por hora
+  let displayDuration = safeReservation.duration;
+  if (
+    showHourlyValues &&
+    safeReservation.startTime &&
+    safeReservation.endTime
+  ) {
+    const [sh, sm] = safeReservation.startTime.split(":").map(Number);
+    const [eh, em] = safeReservation.endTime.split(":").map(Number);
+    const startMinutes = sh * 60 + sm;
+    const endMinutes = eh * 60 + em;
+    displayDuration = Math.max(0.5, (endMinutes - startMinutes) / 60);
+  }
+
   return (
     <Card className="p-6 sticky top-6 shadow-sm">
       <h3 className="text-gray-900 mb-4 text-lg font-semibold">
@@ -40,7 +64,7 @@ export default function PaymentSummary({
             variant="outline"
             className="mt-2 border-gray-200 text-gray-700 bg-gray-50"
           >
-            {safeReservation.spaceType}
+            {typeLabels[safeReservation.spaceType] || safeReservation.spaceType}
           </Badge>
         </div>
 
@@ -68,31 +92,35 @@ export default function PaymentSummary({
           </div>
         </div>
 
-        <Separator className="my-4 h-px bg-gray-300" />
+        {showHourlyValues && (
+          <>
+            <Separator className="my-4 h-px bg-gray-300" />
 
-        {/* Valores */}
-        <div className="space-y-2">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">Duração</span>
-            <span className="text-gray-900 font-medium">
-              {Number(safeReservation.duration).toFixed(1)}h
-            </span>
-          </div>
+            {/* Valores por hora */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Duração</span>
+                <span className="text-gray-900 font-medium">
+                  {displayDuration.toFixed(1)}h
+                </span>
+              </div>
 
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">Valor por hora</span>
-            <span className="text-gray-900 font-medium">
-              R$ {Number(safeReservation.pricePerHour).toFixed(2)}
-            </span>
-          </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Valor por hora</span>
+                <span className="text-gray-900 font-medium">
+                  R$ {Number(safeReservation.pricePerHour).toFixed(2)}
+                </span>
+              </div>
 
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">Subtotal</span>
-            <span className="text-gray-900 font-medium">
-              R$ {Number(safeReservation.total).toFixed(2)}
-            </span>
-          </div>
-        </div>
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Subtotal</span>
+                <span className="text-gray-900 font-medium">
+                  R$ {total.toFixed(2)}
+                </span>
+              </div>
+            </div>
+          </>
+        )}
 
         <Separator className="my-4 h-px bg-gray-300" />
 

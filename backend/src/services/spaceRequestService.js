@@ -1,8 +1,23 @@
 const prisma = require("../config/prisma");
 const emailService = require("./emailService");
+const { AMENITIES } = require("../constants/amenities");
 
 class SpaceRequestService {
   async create(data) {
+    // REGRA DE NEGÓCIO: pelo menos um preço
+    const hasAnyPrice =
+      data.pricePerHour || data.pricePerDay || data.pricePerMonth;
+
+    if (!hasAnyPrice) {
+      throw new Error(
+        "Informe pelo menos um tipo de preço (hora, dia ou mensal)"
+      );
+    }
+
+    const normalizedAmenities = data.amenities
+      .map((a) => AMENITIES[a])
+      .filter(Boolean);
+
     const request = await prisma.spaceRequest.create({
       data: {
         ownerType: data.ownerType,
@@ -33,7 +48,7 @@ class SpaceRequestService {
         minimumBooking: data.minimumBooking,
         additionalInfo: data.additionalInfo,
 
-        amenities: data.amenities,
+        amenities: normalizedAmenities,
         images: data.images,
       },
     });
@@ -75,6 +90,7 @@ class SpaceRequestService {
         data: {
           name: request.spaceName,
           description: request.spaceDescription,
+          spaceType: request.spaceType,
           email: request.ownerEmail,
           phone: request.ownerPhone,
           address: `${request.street}, ${request.number}, ${request.city}`,
@@ -85,12 +101,16 @@ class SpaceRequestService {
           neighborhood: request.neighborhood,
           city: request.city,
           state: request.state,
+
           totalArea: request.totalArea,
           capacity: request.capacity,
+          totalRooms: request.rooms,
+
           pricePerHour: request.pricePerHour,
           pricePerDay: request.pricePerDay,
           pricePerMonth: request.pricePerMonth,
           minimumBooking: request.minimumBooking,
+
           additionalInfo: request.additionalInfo,
           amenities: request.amenities,
           images: request.images,

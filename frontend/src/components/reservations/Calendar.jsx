@@ -1,15 +1,35 @@
 import { useState, useEffect } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import { daysOfWeek, monthNames } from "../../mocks/reservations/calendarMock";
+import { useTranslation } from "react-i18next";
 
 export default function Calendar({ selectedDate, onSelectDate }) {
+  const { t, i18n } = useTranslation();
   const today = new Date();
 
-  const [currentYear, setCurrentYear] = useState(today.getFullYear());
-  const [currentMonth, setCurrentMonth] = useState(today.getMonth());
+  const [currentYear, setCurrentYear] = useState(
+    selectedDate ? selectedDate.getFullYear() : today.getFullYear()
+  );
+  const [currentMonth, setCurrentMonth] = useState(
+    selectedDate ? selectedDate.getMonth() : today.getMonth()
+  );
   const [calendarDays, setCalendarDays] = useState([]);
 
-  const isValidDate = (d) => d instanceof Date && !isNaN(d);
+  // Dias da semana via i18n
+  const daysOfWeek = [
+    t("calendar.sun"),
+    t("calendar.mon"),
+    t("calendar.tue"),
+    t("calendar.wed"),
+    t("calendar.thu"),
+    t("calendar.fri"),
+    t("calendar.sat"),
+  ];
+
+  useEffect(() => {
+    if (!selectedDate) return;
+    setCurrentYear(selectedDate.getFullYear());
+    setCurrentMonth(selectedDate.getMonth());
+  }, [selectedDate]);
 
   useEffect(() => {
     const firstDay = new Date(currentYear, currentMonth, 1).getDay();
@@ -22,24 +42,6 @@ export default function Calendar({ selectedDate, onSelectDate }) {
     setCalendarDays(daysArray);
   }, [currentMonth, currentYear]);
 
-  const handlePrevMonth = () => {
-    if (currentMonth === 0) {
-      setCurrentMonth(11);
-      setCurrentYear((y) => y - 1);
-    } else {
-      setCurrentMonth((m) => m - 1);
-    }
-  };
-
-  const handleNextMonth = () => {
-    if (currentMonth === 11) {
-      setCurrentMonth(0);
-      setCurrentYear((y) => y + 1);
-    } else {
-      setCurrentMonth((m) => m + 1);
-    }
-  };
-
   const isPastDate = (day) => {
     if (!day) return false;
     const date = new Date(currentYear, currentMonth, day);
@@ -48,62 +50,86 @@ export default function Calendar({ selectedDate, onSelectDate }) {
     );
   };
 
+  const isPastMonth = () => {
+    return (
+      currentYear < today.getFullYear() ||
+      (currentYear === today.getFullYear() && currentMonth < today.getMonth())
+    );
+  };
+
   const handleSelect = (day) => {
     if (!day || isPastDate(day)) return;
-    onSelectDate && onSelectDate(new Date(currentYear, currentMonth, day));
+    onSelectDate?.(new Date(currentYear, currentMonth, day));
   };
+
+  const monthLabel = new Date(currentYear, currentMonth).toLocaleDateString(
+    i18n.language, // usa idioma atual
+    { month: "long", year: "numeric" }
+  );
 
   return (
     <div className="bg-white rounded-xl shadow-md p-6 w-full">
+      {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <button
-          onClick={handlePrevMonth}
-          className="p-2 rounded hover:bg-gray-200 transition"
+          disabled={isPastMonth()}
+          onClick={() =>
+            currentMonth === 0
+              ? (setCurrentMonth(11), setCurrentYear((y) => y - 1))
+              : setCurrentMonth((m) => m - 1)
+          }
+          className={`p-1 rounded ${
+            isPastMonth()
+              ? "text-gray-300 cursor-not-allowed"
+              : "hover:bg-gray-100"
+          }`}
         >
-          <ChevronLeft className="w-5 h-5" />
+          <ChevronLeft />
         </button>
 
-        <h2 className="text-lg font-semibold capitalize">
-          {monthNames[currentMonth]} {currentYear}
-        </h2>
+        <h2 className="text-lg font-semibold capitalize">{monthLabel}</h2>
 
         <button
-          onClick={handleNextMonth}
-          className="p-2 rounded hover:bg-gray-200 transition"
+          onClick={() =>
+            currentMonth === 11
+              ? (setCurrentMonth(0), setCurrentYear((y) => y + 1))
+              : setCurrentMonth((m) => m + 1)
+          }
+          className="p-1 rounded hover:bg-gray-100"
         >
-          <ChevronRight className="w-5 h-5" />
+          <ChevronRight />
         </button>
       </div>
 
+      {/* Week days */}
       <div className="grid grid-cols-7 text-center text-gray-500 text-sm mb-2">
         {daysOfWeek.map((d) => (
           <div key={d}>{d}</div>
         ))}
       </div>
 
+      {/* Days */}
       <div className="grid grid-cols-7 gap-2">
-        {calendarDays.map((day, index) => {
-          const dateValue = new Date(currentYear, currentMonth, day);
+        {calendarDays.map((day, i) => {
           const isSelected =
-            isValidDate(selectedDate) &&
             day &&
-            dateValue.toDateString() === selectedDate.toDateString();
+            selectedDate &&
+            new Date(currentYear, currentMonth, day).toDateString() ===
+              selectedDate.toDateString();
 
           const disabled = isPastDate(day);
 
           return (
             <button
-              key={index}
+              key={i}
+              disabled={!day || disabled}
               onClick={() => handleSelect(day)}
-              disabled={disabled || !day}
               className={`
-                h-10 flex items-center justify-center rounded-md transition
-                ${!day ? "bg-transparent cursor-default" : ""}
-                ${
-                  disabled ? "text-gray-300 bg-gray-100 cursor-not-allowed" : ""
-                }
-                ${isSelected ? "bg-blue-600 text-white font-medium" : ""}
-                ${!disabled && !isSelected && day ? "hover:bg-blue-100" : ""}
+                h-10 rounded-md text-sm
+                ${!day ? "cursor-default" : ""}
+                ${disabled ? "text-gray-300 bg-gray-100" : ""}
+                ${isSelected ? "bg-blue-600 text-white" : ""}
+                ${!disabled && day && !isSelected ? "hover:bg-blue-100" : ""}
               `}
             >
               {day || ""}
