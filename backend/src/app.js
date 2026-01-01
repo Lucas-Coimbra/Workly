@@ -16,18 +16,13 @@ const twoFARoutes = require("./routes/twoFA.Routes");
 const { errorHandler } = require("./middlewares/errorMiddleware");
 
 const app = express();
-app.get("/api/health", async (req, res) => {
-  try {
-    await require("./config/prisma").$queryRaw`SELECT 1`;
-    res.json({ status: "ok", db: "connected" });
-  } catch (err) {
-    res.status(500).json({ status: "error", error: err.message });
-  }
-});
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: [
+      "http://localhost:5173", // dev
+      "https://workly-frontend.onrender.com", // produção (vamos criar já já)
+    ],
     credentials: true,
   })
 );
