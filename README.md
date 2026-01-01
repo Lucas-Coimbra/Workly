@@ -1,96 +1,95 @@
-Sistema de Gestão de Coworkings e Espaços Compartilhados
-Objetivo: Criar uma plataforma que permita que coworkings, hubs de inovação e espaços compartilhados administrem melhor sua estrutura física e serviços oferecidos, aumentando eficiência operacional e oferecendo uma experiência fluida para os usuários.
+Workly — Sistema de Gestão de Coworkings e Espaços Compartilhados
 
-Funcionalidades:
-Reserva de salas, mesas e equipamentos.
-Controle de planos de assinatura (diário, mensal, corporativo).
-Integração com pagamentos online.
-Registro de utilização de recursos (internet, impressoras, coffee break).
-Relatórios de ocupação e faturamento.
+O Workly é uma plataforma web desenvolvida como Trabalho de Conclusão de Curso (TCC) com o objetivo de facilitar a gestão de coworkings, hubs de inovação e espaços compartilhados, oferecendo mais controle operacional para administradores e uma experiência simples e eficiente para os usuários.
 
-Perfis de acesso:
-Usuário: reserva espaços e consulta histórico.
-Administrador: controla planos, recursos e relatórios.
-Equipe de suporte: atende chamados e gerencia infraestrutura.
+🎯 Objetivo do Projeto
 
-## **Resumo do cenário e requisitos**
+Criar uma solução digital que permita:
 
-### **1️⃣ Filtros**
+Gerenciamento eficiente de espaços físicos
 
-- **Tipo de espaço**: igual aos tipos usados no `SpaceRequest` → filtragem por `spaceType`.
-- **Capacidade**: número de pessoas → `workspace.capacity`.
-- **Recursos**: amenities → `workspace.amenities`.
-- **Data**: calendário → escolher o dia da reserva.
-- **Disponibilidade**: precisa considerar reservas já existentes (bloqueio parcial depende do tipo de pagamento).
+Organização de reservas e planos
 
----
+Centralização de informações administrativas
 
-### **2️⃣ Calendário e Disponibilidade**
+Melhoria na experiência do usuário final
 
-- Deve mostrar apenas **workspaces com disponibilidade na data selecionada**.
-- Tipo de pagamento influencia o bloqueio:
+⚙️ Funcionalidades Principais
 
-  - **Por hora** → bloqueia apenas aquele horário específico.
-  - **Por dia** → bloqueia o dia inteiro.
-  - **Por mês** → bloqueia do dia X até o dia Y.
+📅 Sistema de Reservas
 
-- Consideração: se há **reserva por hora em um dia**, não impede reserva de outro horário ou outro tipo de pagamento no mesmo dia.
-- Disponibilidade deve ser calculada dinamicamente usando as reservas já existentes no `Reservation`.
+Reserva de salas, mesas e espaços compartilhados
 
----
+Visualização de disponibilidade em tempo real
 
-### **3️⃣ Detalhes do Workspace**
+💼 Gestão de Espaços
 
-- Mostrar imagens (primeira imagem se não carregar).
-- Informações:
+Cadastro e aprovação de espaços (workflow de solicitação)
 
-  - Endereço completo (`street`, `number`, `complemento`, `city`, `state`, `zipCode`).
-  - Proprietário (via `SpaceRequest` ou `approvedFromRequest`).
-  - Capacidade e total de salas.
-  - Preços: `pricePerHour`, `pricePerDay`, `pricePerMonth`.
-  - Amenities.
-  - Total de salas e distribuição (opcional).
+Controle de capacidade, tipos de ambientes e recursos disponíveis
 
----
+🧾 Planos e Assinaturas
 
-### **4️⃣ Reserva**
+Planos diários, mensais e personalizados
 
-- Usuário MEMBER escolhe:
+Associação de usuários a planos
 
-  - Data inicial e final (se aplicável).
-  - Tipo de pagamento: hora / diária / mensal.
-  - Horário (para hora) ou datas para diária/mensal.
+👤 Gestão de Usuários
 
-- Backend deve:
+Perfis distintos com permissões específicas
 
-  - Validar disponibilidade de cada sala (`Room`) dentro do `Workspace`.
-  - Criar `Reservation` vinculando `Workspace` e `Room` específica.
-  - Retornar valor total calculado conforme tipo de pagamento.
+Configurações individuais de conta
 
----
+📊 Relatórios e Informações Gerenciais
 
-### **5️⃣ Frontend**
+Dados de ocupação
 
-- Mostrar **cards de workspaces disponíveis**:
+Histórico de reservas
 
-  - Com imagens, nome, tipo, capacidade, preço, amenities.
-  - Ao clicar → modal de detalhes.
+Visão geral administrativa
 
-- Modal de reserva:
+👥 Perfis de Acesso
 
-  - Escolha do tipo de pagamento (interface muda de acordo com a escolha: hora / diária / mensal).
-  - Escolha de data e horário (se hora) ou período (se diária/mensal).
-  - Botão para confirmar → envia para backend.
+Usuário (Membro)
 
-- Após reserva, atualizar calendário e cards.
+Realiza reservas
 
----
+Consulta histórico e informações do plano
 
-### **6️⃣ Pontos importantes que não podemos esquecer**
+Administrador
 
-- **Bloqueio parcial por tipo de pagamento** (hora, dia, mês) — complexo, mas essencial.
-- **Disponibilidade das salas** dentro do workspace.
-- **Cálculo do valor total** corretamente no backend.
-- **Imagens fallback** caso não carregue.
-- **Proprietário do workspace** (via SpaceRequest aprovado).
-- **Amenities e recursos filtráveis**.
+Aprova solicitações de espaços
+
+Gerencia planos, usuários e reservas
+
+Visualiza dados e relatórios do sistema
+
+Equipe de Suporte
+
+Atendimento a solicitações
+
+Apoio operacional e gestão de infraestrutura
+
+🛠️ Tecnologias Utilizadas
+
+Frontend: JS + Vite/React + Tailwind CSS
+
+Backend: Node.js + Express
+
+Banco de Dados: PostgreSQL (via Prisma ORM)
+
+Autenticação: JWT
+
+Validação: Zod
+
+Ambiente: Docker (desenvolvimento)
+
+📌 Status do Projeto
+
+Projeto em desenvolvimento contínuo, com foco atual em:
+
+Estabilidade do backend
+
+Fluxo completo de reservas
+
+Preparação para deploy e apresentação acadêmica
