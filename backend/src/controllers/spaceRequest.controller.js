@@ -3,9 +3,6 @@ const { spaceRequestSchema } = require("../validations/spaceRequestSchema");
 
 class SpaceRequestController {
   async create(req, res) {
-    console.log("REQ.BODY:", req.body);
-    console.log("REQ.FILES:", req.files);
-
     try {
       // pega os paths das imagens
       const images = req.files.map((file) => file.path);
