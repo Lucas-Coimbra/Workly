@@ -43,8 +43,8 @@ export function AuthProvider({ children }) {
   }, []);
 
   // 🔐 login
-  const login = useCallback(async (email, password) => {
-    const data = await loginRequest(email, password);
+  const login = useCallback(async (email, password, recaptchaToken) => {
+    const data = await loginRequest(email, password, recaptchaToken);
 
     if (data.twoFAEnabled) {
       setTempToken(data.tempToken);

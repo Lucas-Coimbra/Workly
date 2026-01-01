@@ -3,15 +3,13 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 
 import { registerRequest } from "@/services/auth.service";
-import { useAuth } from "@/hooks/useAuth";
 import LayoutAuth from "../../components/LayoutAuth";
 import ReCAPTCHA from "../../components/ReCAPTCHA";
 
 export default function Register() {
   const navigate = useNavigate();
-  const { login } = useAuth();
 
-  const [captchaVerified, setCaptchaVerified] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState(null);
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
@@ -35,7 +33,7 @@ export default function Register() {
       return;
     }
 
-    if (!captchaVerified) {
+    if (!captchaToken) {
       toast.error("Confirme que você não é um robô.");
       return;
     }
@@ -48,14 +46,11 @@ export default function Register() {
         email,
         phone,
         password,
+        recaptchaToken: captchaToken,
       });
 
       toast.success("Conta criada com sucesso!");
-
-      await login(email, password);
-
-      toast.success("Login realizado!");
-      navigate("/member-dashboard");
+      navigate("/login");
     } catch (err) {
       toast.error(parseRegisterError(err));
     } finally {
@@ -164,7 +159,7 @@ export default function Register() {
           Aceito os Termos de Uso e Política de Privacidade
         </label>
 
-        <ReCAPTCHA onVerify={setCaptchaVerified} />
+        <ReCAPTCHA onVerify={setCaptchaToken} />
 
         {/* Botão */}
         <button

@@ -13,7 +13,7 @@ export default function Login() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [captchaVerified, setCaptchaVerified] = useState(false);
+  const [captchaToken, setCaptchaToken] = useState(null);
   const [loading, setLoading] = useState(false);
 
   const [show2FAModal, setShow2FAModal] = useState(false);
@@ -38,7 +38,7 @@ export default function Login() {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!captchaVerified) {
+    if (!captchaToken) {
       toast.error("Confirme que você não é um robô.");
       return;
     }
@@ -46,7 +46,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const result = await login(email, password);
+      const result = await login(email, password, captchaToken);
 
       // 🔐 Exige 2FA
       if (result.requires2FA) {
@@ -77,45 +77,6 @@ export default function Login() {
       handleRedirect(verifiedData.role);
     } catch {
       setTwoFAError("Código inválido. Tente novamente.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleQuickLogin = async (role) => {
-    if (!import.meta.env.DEV) return;
-
-    const map = {
-      MEMBER: {
-        email: import.meta.env.VITE_DEV_MEMBER_EMAIL,
-        password: import.meta.env.VITE_DEV_MEMBER_PASSWORD,
-      },
-      ADMIN: {
-        email: import.meta.env.VITE_DEV_ADMIN_EMAIL,
-        password: import.meta.env.VITE_DEV_ADMIN_PASSWORD,
-      },
-      SUPPORT: {
-        email: import.meta.env.VITE_DEV_SUPPORT_EMAIL,
-        password: import.meta.env.VITE_DEV_SUPPORT_PASSWORD,
-      },
-    };
-
-    const creds = map[role];
-    if (!creds) return;
-
-    setLoading(true);
-
-    try {
-      const result = await login(creds.email, creds.password);
-
-      if (result.requires2FA) {
-        toast("Digite o código 2FA 🔐");
-        setShow2FAModal(true);
-        return;
-      }
-
-      toast.success("Login rápido realizado!");
-      handleRedirect(result.user.role);
     } finally {
       setLoading(false);
     }
@@ -176,7 +137,7 @@ export default function Login() {
           </button>
         </div>
 
-        <ReCAPTCHA onVerify={setCaptchaVerified} />
+        <ReCAPTCHA onVerify={setCaptchaToken} />
 
         <button
           type="submit"
@@ -185,25 +146,6 @@ export default function Login() {
         >
           {loading ? "Entrando..." : "Entrar"}
         </button>
-
-        {import.meta.env.DEV && (
-          <div className="mt-4 text-center space-y-2">
-            <p className="text-sm text-gray-500">Acesso rápido (demo):</p>
-            <div className="flex justify-center gap-2 flex-wrap">
-              {["MEMBER", "ADMIN", "SUPPORT"].map((role) => (
-                <button
-                  key={role}
-                  type="button"
-                  disabled={loading}
-                  onClick={() => handleQuickLogin(role)}
-                  className="px-3 py-1 bg-gray-100 rounded hover:bg-gray-200"
-                >
-                  Entrar como {role}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
 
         <div className="mt-4 text-center text-sm text-gray-600">
           Não tem uma conta?{" "}

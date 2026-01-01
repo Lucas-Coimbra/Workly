@@ -1,17 +1,28 @@
 import { api } from "./api";
 
-export async function registerRequest({ name, email, phone, password }) {
+export async function registerRequest({
+  name,
+  email,
+  phone,
+  password,
+  recaptchaToken,
+}) {
   const res = await api.post("/auth/register", {
     name,
     email,
     phone,
     password,
+    recaptchaToken,
   });
   return res.data;
 }
 
-export async function loginRequest(email, password) {
-  const res = await api.post("/auth/login", { email, password });
+export async function loginRequest(email, password, recaptchaToken) {
+  const res = await api.post("/auth/login", {
+    email,
+    password,
+    recaptchaToken,
+  });
   return res.data;
 }
 

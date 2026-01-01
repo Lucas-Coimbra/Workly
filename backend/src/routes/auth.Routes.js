@@ -4,9 +4,11 @@ const {
   forgotPasswordLimiter,
   loginLimiter,
 } = require("../middlewares/rateLimit");
+const recaptchaMiddleware = require("../middlewares/verifyRecaptcha");
 
-router.post("/register", authController.register);
-router.post("/login", loginLimiter, authController.login);
+router.post("/login", recaptchaMiddleware, authController.login);
+
+router.post("/register", recaptchaMiddleware, authController.register);
 
 router.post(
   "/forgot-password",

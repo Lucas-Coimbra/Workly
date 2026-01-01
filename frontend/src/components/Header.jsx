@@ -91,9 +91,7 @@ export default function Header() {
 
             <div className="hidden sm:block">
               <div className="text-lg font-semibold text-slate-800">Workly</div>
-              <div className="text-xs text-slate-500">
-                {roleLabel} • {t("plan")} {user.plan?.name}
-              </div>
+              <div className="text-xs text-slate-500">{roleLabel}</div>
             </div>
           </div>
 
@@ -252,7 +250,7 @@ export default function Header() {
                     {user.name}
                   </div>
                   <div className="text-xs text-slate-500">
-                    {roleLabel} • {t("plan")} {user.plan?.name}
+                    {t("plan")} • {user.plan?.name}
                   </div>
                 </div>
               </button>

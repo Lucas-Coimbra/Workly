@@ -21,8 +21,12 @@ class SpaceRequestController {
       // clona o req.body e converte strings numéricas para number
       const bodyWithNumbers = { ...req.body };
       numericFields.forEach((field) => {
-        if (bodyWithNumbers[field] !== undefined) {
-          bodyWithNumbers[field] = Number(bodyWithNumbers[field]);
+        const value = bodyWithNumbers[field];
+
+        if (value === "" || value === undefined) {
+          bodyWithNumbers[field] = null;
+        } else {
+          bodyWithNumbers[field] = Number(value);
         }
       });
 

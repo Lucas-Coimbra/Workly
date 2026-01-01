@@ -28,10 +28,10 @@ const spaceRequestSchema = z.object({
   rooms: z.number().int().positive().optional(),
 
   // ===== Preços =====
-  pricePerHour: z.number().positive().optional(),
-  pricePerDay: z.number().positive().optional(),
-  pricePerMonth: z.number().positive().optional(),
-  minimumBooking: z.number().int().positive().optional(),
+  pricePerHour: z.number().positive().nullable().optional(),
+  pricePerDay: z.number().positive().nullable().optional(),
+  pricePerMonth: z.number().positive().nullable().optional(),
+  minimumBooking: z.number().int().positive().nullable().optional(),
   additionalInfo: z.string().optional(),
 
   // ===== Extras =====

@@ -6,7 +6,15 @@ class SpaceRequestService {
   async create(data) {
     // REGRA DE NEGÓCIO: pelo menos um preço
     const hasAnyPrice =
-      data.pricePerHour || data.pricePerDay || data.pricePerMonth;
+      (data.pricePerHour && data.pricePerHour > 0) ||
+      (data.pricePerDay && data.pricePerDay > 0) ||
+      (data.pricePerMonth && data.pricePerMonth > 0);
+
+    if (!hasAnyPrice) {
+      throw new Error(
+        "Informe pelo menos um tipo de preço (hora, dia ou mensal)"
+      );
+    }
 
     if (!hasAnyPrice) {
       throw new Error(
