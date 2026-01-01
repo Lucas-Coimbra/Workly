@@ -1,5 +1,9 @@
 require("dotenv").config();
+
+console.log("DATABASE_URL no Render:", process.env.DATABASE_URL);
+
 const app = require("./app");
+
 const prisma = require("./config/prisma");
 
 const PORT = process.env.PORT || 4000;
