@@ -17,12 +17,20 @@ const { errorHandler } = require("./middlewares/errorMiddleware");
 
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:5173",
+  "https://workly-1qjm.onrender.com",
+];
+
 app.use(
   cors({
-    origin: [
-      "http://localhost:5173", // dev
-      "https://workly-frontend.onrender.com", // produção (vamos criar já já)
-    ],
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
   })
 );
