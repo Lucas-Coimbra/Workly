@@ -1,4 +1,4 @@
-import { Badge } from "./badge";
+import { Badge } from "./Badge";
 import { CheckCircle, XCircle, AlertCircle } from "lucide-react";
 
 export default function StatusBadge({ status }) {
