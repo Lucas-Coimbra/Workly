@@ -10,6 +10,7 @@ import { useAuth } from "../hooks/useAuth";
 import { useState, useEffect, useRef } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+
 import NotificationSettings from "../components/settingsM/NotificationSettings";
 import PreferencesSettings from "../components/settingsM/PreferencesSettings";
 import SecuritySettings from "../components/settingsM/SecuritySettings";
@@ -17,6 +18,7 @@ import DangerZone from "../components/settingsM/DangerZone";
 import SaveMessage from "../components/settingsM/SaveMessage";
 import DeleteAccountModal from "../components/settingsM/DeleteAccountModal";
 import TwoFAModal from "../components/settingsM/TwoFAModal";
+
 import { useNavigate } from "react-router-dom";
 import { languages, timezones, currencies } from "../mocks/settingsData";
 import * as twoFAService from "../services/twoFA.service";

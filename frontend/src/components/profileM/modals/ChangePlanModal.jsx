@@ -1,4 +1,4 @@
-import { Card } from "../../ui";
+import { Card } from "../../ui/Card";
 import { X } from "lucide-react";
 import PlanSelector from "../PlanSelector";
 

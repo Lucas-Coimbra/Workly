@@ -1,4 +1,4 @@
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { RadioGroup, RadioGroupItem } from "../ui/radio-group";
 import { CreditCard, Building2, QrCode } from "lucide-react";
 
 export default function PaymentMethodOptions({

@@ -1,6 +1,5 @@
 import { User, Mail, Phone, Building, TrendingUp, MapPin } from "lucide-react";
 import { Card, Input, Textarea, Label, Separator, Button } from "../ui";
-import { Edit2, CheckCircle } from "lucide-react";
 
 export default function PersonalInfo({
   profileData,

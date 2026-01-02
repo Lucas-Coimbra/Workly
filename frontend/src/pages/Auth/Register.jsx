@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-import { registerRequest } from "@/services/auth.service";
+import { registerRequest } from "../../services/auth.service";
 import LayoutAuth from "../../components/LayoutAuth";
 import ReCAPTCHA from "../../components/ReCAPTCHA";
 

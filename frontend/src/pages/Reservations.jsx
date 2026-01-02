@@ -9,14 +9,13 @@ import { Card, Badge } from "@/components/ui";
 import Filters from "../components/reservations/Filters";
 import Calendar from "../components/reservations/Calendar";
 import SpaceCard from "../components/reservations/SpaceCard";
+import { DetailsDialog } from "../components/reservations/DetailsDialog";
+import ReservationFlowDialog from "../components/reservations/ReservationFlowDialog";
 
 import { useWorkspaces } from "../hooks/useWorkspaces";
 import { useCreateReservation } from "../hooks/useReservation";
 
 import { formatDisplayDate } from "../../utils/reservationUtils";
-
-import { DetailsDialog } from "../components/reservations/DetailsDialog";
-import ReservationFlowDialog from "../components/reservations/ReservationFlowDialog";
 
 export default function Reservations({ onLogout }) {
   const { t } = useTranslation();
